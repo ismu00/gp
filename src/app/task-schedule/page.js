@@ -32,7 +32,7 @@ export default function List() {
         </motion.div>
       </main>
 
-    <Link href='/list/generate'>
+    <Link href='/task-schedule/generate-task'>
     <div className='grid grid-cols-1 lg:grid-cols-2 gap-8 overflow-hidden'>
         <motion.div
           className='flex flex-col items-center mb-8 mt-1 h-40 w-40 justify-center  mx-10 cursor-pointer bg-[#1e1e1e] outline-1 outline-gray-600   transition-colors duration-300 hover:bg-[#2f2f2f] rounded-lg backdrop-blur-md shadow-lg'

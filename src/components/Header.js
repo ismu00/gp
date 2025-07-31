@@ -1,5 +1,5 @@
 'use client'
-import { Bell, ChevronLeft, CircleChevronLeft, MoveLeft } from "lucide-react";
+import { Bell, ChevronLeft, CircleChevronLeft,ClipboardList, MoveLeft, Plus } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -58,9 +58,12 @@ export default function Header() {
         </h2>
      </div>
         <div className="flex items-center space-x-3">
-          <h1 className="hidden sm:block font-medium">admin</h1>
+          {/* <h1 className="hidden sm:block font-medium">admin</h1> */}
           <div className="relative">
-            <Bell className="w-5 sm:w-6 h-5 sm:h-6 text-gray-300 hover:text-white" />
+            {/* <Bell className="w-5 sm:w-6 h-5 sm:h-6 text-gray-300 hover:text-white" /> */}
+          
+            <Link href='/task-schedule/generate-task' className="flex gap-2 backdrop-blur-lg shadow-md bg-blue-800 py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors cursor-pointer duration-300">  Create Task                           <ClipboardList />
+            </Link>
           </div>
         </div>
       </div>

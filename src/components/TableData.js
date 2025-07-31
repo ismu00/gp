@@ -5,11 +5,11 @@ import { DeleteIcon, Edit, Search, Trash2 } from 'lucide-react'
 
 function TableData() {
   const demiData = [
-    { id: 1, name: "Week 01", date: "July 21 Wed ", email: "midl@example.com" },
-    { id: 1, name: "Week 01", date: "July 21 Wed ", email: "john@example.com" },
-    { id: 1, name: "Week 01", date: "July 21 Wed ", email: "john@example.com" },
-    { id: 1, name: "Week 01", date: "July 21 Wed ", email: "john@example.com" },
-
+    { id: 1, name: "Week 01", date: "July 21 Wed ", email: "midl@example.com", status:"completed" },
+    { id: 1, name: "Week 01", date: "July 21 Wed ", email: "midl@example.com", status:"pending" },
+    { id: 1, name: "Week 01", date: "July 21 Wed ", email: "midl@example.com", status:"completed" },
+    { id: 1, name: "Week 01", date: "July 21 Wed ", email: "midl@example.com", status:"completed" },
+    { id: 1, name: "Week 01", date: "July 21 Wed ", email: "midl@example.com", status:"pending" },
 
   ]
 
@@ -43,7 +43,7 @@ function TableData() {
         <table className='min-w-full divide-y divide-gray-700'>
           <thead>
             <tr>
-              {["No", "Task", "Date", "Email", "Action"].map((item, index) => (
+              {["No", "Task", "Date", "Status", "Action"].map((item, index) => (
                 <th
                   key={index}
                   className='px-3 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider hidden sm:table-cell'
@@ -103,10 +103,14 @@ function TableData() {
                 <td className='px-3 sm:px-6 py-2 sm:py-3 text-white hidden sm:table-cell'>{index + 1}</td>
                 <td className='px-3 sm:px-6 py-2 sm:py-3 text-white hidden sm:table-cell'>{item.name}</td>
                 <td className='px-3 sm:px-6 py-2 sm:py-3 text-white hidden sm:table-cell'>{item.date}</td>
-                <td className='px-3 sm:px-6 py-2 sm:py-3 text-white hidden sm:table-cell'>{item.email}</td>
                 <td className='px-3 sm:px-6 py-2 sm:py-3  text-white hidden sm:table-cell  '>
                   <div className='flex items-center'>
-                    <button className='text-sm   bg-indigo-600 hover:bg-blue-700 px-3 py-1 rounded-md'>View</button>
+                    <button className={`text-sm    px-3 py-1 rounded-md ${item.status === "pending" ? "bg-amber-700" : "bg-green-700"} `}>{item.status}</button>
+                  </div>
+                </td>
+                <td className='px-3 sm:px-6 py-2 sm:py-3  text-white hidden sm:table-cell  '>
+                  <div className='flex items-center'>
+                    <button className='text-sm cursor-pointer  bg-blue-700 hover:bg-blue-800 transition-colors duration-200 px-3 py-1 rounded-md'>Open</button>
                     <button className='text-sm   px-3 py-1 rounded-md'><Trash2 size={18} className='' /></button>
 
                   </div>
