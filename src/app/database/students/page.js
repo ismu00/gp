@@ -1,48 +1,66 @@
 'use client'
 import React, { useState, useEffect } from 'react'
-import { CircleX, UserRoundPlus, Trash, Plus, Search, ClipboardList, Users } from 'lucide-react'
+import { CircleX, UserRoundPlus, Trash, Plus, Search, ClipboardList, Users, Edit } from 'lucide-react'
+import { useData } from '@/app/context/DataContext';
+import { motion } from 'motion/react'
 
 const Class = [
     'All Classes', 'BS 1', 'BS 2', 'BS 3', 'BS 4', 'BS 5'
 ]
-let studentsNames = [
-    { name: 'Shameem Ali', level: 'BS 5', rollNo: 34 },
-    { name: 'Shibili Erkm', level: 'BS 4', rollNo: 34 },
-    { name: 'Shabeer Ali', level: 'BS 2', rollNo: 34 },
-    { name: 'Muhsin', level: 'BS 1', rollNo: 34 },
-    { name: 'Muflish', level: 'BS 3', rollNo: 34 }
-]
+
 
 
 
 function Page() {
+
+
     const [searchQuery, setSearchQuery] = useState("");
-    
-    const [studentsNames, setStudentsNames] = useState([]);
+    const [vip, setVip] = useState(true);
+    const { studentsNames, setStudentsNames } = useData()
     const [fillterMenu, setfillterMenu] = useState('All Classes');
     const [addStudent, setAddStudent] = useState(false);
     const [addExtraStd, setaddExtraStd] = useState([{ name: "", RoomNumber: '' }]);
-    // Add Data
     const [studentClass, setStudentClass] = useState('BS 1');
 
 
-const fetchStudents = async () => {
-    try {
-        const res = await fetch('/api/studentsDB');
-        const json = await res.json();
-        if (json.success) {
-            setStudentsNames(json.result);
-        } else {
-            console.error(json.error);
-        }
-    } catch (error) {
-        console.error('Fetch failed:', error);
-    }
-};
+    useEffect(() => {
+        if (!studentsNames || studentsNames.length === 0) {
+            const fetchStudents = async () => {
+                try {
+                    const res = await fetch('/api/studentsDB');
+                    const json = await res.json();
+                    if (json.success) {
+                        setStudentsNames(json.result);
+                    } else {
+                        console.error(json.error);
+                    }
+                } catch (error) {
+                    console.error('Fetch failed:', error);
+                }
+            };
 
-useEffect(() => {
-    fetchStudents();
-}, []);
+            fetchStudents();
+        }
+    }, []);
+
+
+    const fetchStudents = async () => {
+        try {
+            const res = await fetch('/api/studentsDB');
+            const json = await res.json();
+            if (json.success) {
+                setStudentsNames(json.result);
+            } else {
+                console.error(json.error);
+            }
+        } catch (error) {
+            console.error('Fetch failed:', error);
+        }
+    };
+
+    // useEffect(() => {
+    //     fetchStudents();
+    // }, []);
 
 
     const handleToggleAddStudent = () => {
@@ -85,7 +103,7 @@ useEffect(() => {
                 alert("Students added!");
                 setAddStudent(false);
                 setaddExtraStd([{ name: "", RoomNumber: '' }])
-                 fetchStudents();
+                fetchStudents();
 
 
 
@@ -102,13 +120,13 @@ useEffect(() => {
     };
 
 
-const filterData = fillterMenu === "All Classes"
-    ? studentsNames
-    : studentsNames.filter(student => student.className === fillterMenu);
-    
-    const displayedStudents = filterData.filter(student =>
-    student.name.toLowerCase().includes(searchQuery.toLowerCase())
-);
+    const filterData = fillterMenu === "All Classes"
+        ? studentsNames
+        : studentsNames.filter(student => student.className === fillterMenu);
+
+    const displayedStudents = filterData?.filter(student =>
+        student.name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
 
     return (
         <div >
@@ -127,7 +145,7 @@ const filterData = fillterMenu === "All Classes"
                                         <option key={index} value={item}>{item}</option>
                                     )}
                                 </select>
-                                <p className='text-sm font-extralight  mt-2 text-gray-300   text-right '>Showing <span className='font-semibold'>{displayedStudents.length} </span>students</p>
+                                <p className='text-sm font-extralight  mt-2 text-gray-300   text-right '>Showing <span className='font-semibold'>{displayedStudents?.length} </span>students</p>
 
                             </div>
                             <div className='relative w-full sm:w-auto'>
@@ -142,23 +160,27 @@ const filterData = fillterMenu === "All Classes"
                             </div>
                         </div>
                         <div>
-                            <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3  gap-2 mx-8 ' >
+                            <motion.div className='grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3  gap-2 mx-2 sm:mx-4 md:mx-8 pb-8'
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 1 }} >
 
                                 {displayedStudents?.map((item, index) =>
-                                    <div key={index} className={`bg-[#1e1e1e]  py-6 px-8  rounded-xl`}>
+                                    <div key={index} className={`${item.vip ? "bg-red-900" : "bg-[#1e1e1e]"}  py-6 px-8 rounded-xl`}>
                                         <div className='grid grid-cols-5'>
                                             <div className='col-span-4'>
-                                                <h1 className='text-lg font-semibold font-sans'>{item.name}</h1>
+                                                <h1 className='text-sm sm:text-base md:text-lg font-semibold font-sans'>{item.name}</h1>
                                                 <p className='inline text-gray-300'>{item.className}</p>
                                             </div>
-                                            <div className='flex items-center gap-2'>
-                                                <UserRoundPlus size={16} className='cursor-pointer' />
+                                            <div className='flex items-center gap-2 w-10'>
+                                                <Edit size={16} className='cursor-pointer  hover:text-blue-300' />
                                                 <Trash size={16} className='cursor-pointer hover:text-red-300 transition-colors duration-300' />
+
                                             </div>
                                         </div>
                                     </div>
                                 )}
-                            </div>
+                            </motion.div>
                         </div>
                     </div>
 
@@ -169,9 +191,10 @@ const filterData = fillterMenu === "All Classes"
                     <div className="bg-[#1e1e1e]  p-6 rounded-lg shadow-lg w-100 ">
                         <div className='flex  justify-between'>
                             <p className='flex text-xl font-semibold mt-4 gap-2'> <Users />   Add Students</p>
-                            <CircleX className='mt-4 cursor-pointer' onClick={() => {setAddStudent(!addStudent), setaddExtraStd([{ name: "", RoomNumber: '' }])
-                 fetchStudents();
-}} />
+                            <CircleX className='mt-4 cursor-pointer' onClick={() => {
+                                setAddStudent(!addStudent), setaddExtraStd([{ name: "", RoomNumber: '' }])
+                                fetchStudents();
+                            }} />
                         </div>
                         <div className='mt-6'><label className='w-full'>Level</label>
                             <select

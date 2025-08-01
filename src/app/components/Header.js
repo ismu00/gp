@@ -33,6 +33,12 @@ const primaryNav = [
     name: 'Students Database',
     path: '/database/students',
     icon: 'Bot',
+
+  },
+  {
+    name: 'Create New Task',
+    path: '/task-schedule/generate-task',
+    icon: 'Bot',
   },
 ];
 
@@ -46,7 +52,7 @@ export default function Header() {
 
   return (
     <header className="bg-[#1e1e1e] shadow-lg border-b border-[#1f1f1f] mx-4 sm:mx-6 lg:mx-8 mt-4 mb-2 rounded-lg">
-      <div className="max-w-7xl mx-auto py-4 px-4 sm:px-6 flex items-center justify-between">
+      <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 flex items-center justify-between">
      <div className="flex items-center gap-2">
 {(pathname === '/database/students' || pathname === '/database/area') && (
   <Link href='/database'>
@@ -58,12 +64,11 @@ export default function Header() {
         </h2>
      </div>
         <div className="flex items-center space-x-3">
-          {/* <h1 className="hidden sm:block font-medium">admin</h1> */}
           <div className="relative">
-            {/* <Bell className="w-5 sm:w-6 h-5 sm:h-6 text-gray-300 hover:text-white" /> */}
           
-            <Link href='/task-schedule/generate-task' className="flex gap-2 backdrop-blur-lg shadow-md bg-blue-800 py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors cursor-pointer duration-300">  Create Task                           <ClipboardList />
-            </Link>
+          {pathname !=="/task-schedule/generate-task" &&    <Link href='/task-schedule/generate-task' className="flex gap-2 backdrop-blur-lg shadow-md bg-blue-800 py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors cursor-pointer duration-300">  Create Task                           <ClipboardList />
+            </Link> }
+         
           </div>
         </div>
       </div>

@@ -1,6 +1,6 @@
 'use client'
 import { motion } from 'motion/react'
-import StateCart from '@/components/StateCart'
+import StateCart from '@/app/components/StateCart'
 import {
   IndianRupee,
   BrushCleaning,
@@ -9,7 +9,7 @@ import {
   CalendarDays,
   Plus,
 } from 'lucide-react'
-import TableData from '@/components/TableData'
+import TableData from '@/app/components/TableData'
 import Link from 'next/link'
 export default function List() {
   return (

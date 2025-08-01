@@ -1,6 +1,6 @@
 'use client'
 import { motion } from 'motion/react'
-import StateCart from '@/components/StateCart'
+import StateCart from '@/app/components/StateCart'
 import {
   IndianRupee,
   BrushCleaning,
@@ -8,8 +8,8 @@ import {
   ClockAlert,
   CalendarDays,
 } from 'lucide-react'
-import TasksOverview from '@/components/TasksOverview'
-import CategoryDistributionChart from '@/components/categoryDistriutionChart'
+import TasksOverview from '@/app/components/TasksOverview'
+import CategoryDistributionChart from '@/app/components/categoryDistriutionChart'
 
 export default function Overview() {
   return (
