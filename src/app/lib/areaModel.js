@@ -7,5 +7,4 @@ const AreasModel = new mongoose.Schema({
   category: String
 });
 
-// ✅ Use "default" export and correct model check
 export default mongoose.models.Areas || mongoose.model('Areas', AreasModel);

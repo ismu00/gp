@@ -12,17 +12,6 @@ export async function GET() {
 
 }
 
-// export async function POST(req){
-//     await mongoose.connect(connectionStr2);
-//     const payload = await req.json()
-//     const newStudent = new StudentsSchema({...payload})
-//     await newStudent.save()
-
-//     return NextResponse.json({
-//         success: true,
-//         result: newStudent
-//     })
-// }
 
 
 export async function POST(req) {

@@ -1,34 +1,29 @@
 'use client'
 import React, { useEffect, useState } from 'react'
-import { SquarePlus, CircleX, Plus, Trash, CirclePlus, Edit, Search } from 'lucide-react'
+import { SquarePlus, CircleX, Plus, Trash, CirclePlus, Edit, Search, Users } from 'lucide-react'
 import { motion } from 'motion/react'
 import { useData } from '@/app/context/DataContext'
 
 const Class = [
     'All Areas', 'MASJID', 'MNC Ground Floor', 'MNC 1st Floor', 'MNC 2nd Floor', 'MNC Outside'
 ]
-let areas = [
-    { name: 'Varanda', area: 'MASJID' },
-    { name: 'Step Right', area: 'MNC Ground Floor' },
-    { name: 'class 5', area: 'MNC 2nd Floor' },
-    { name: 'M', area: 'MNC Outside' },
-    { name: 'Muflish', area: 'MNC 1st Floor' }
-]
+
 
 
 function Page() {
 
-    const {areas, setAreas} = useData()
+    const { areaData, setAreaData } = useData()
     const [searchQuery, setSearchQuery] = useState("");
     const [fillterMenu, setfillterMenu] = useState('All Areas');
-    const [addArea, setaddArea] = useState(false);
-    const [addExtraArea, setaddExtraArea] = useState([{ area: "" }]);
-    const [studentClass, setStudentClass] = useState('');
+    const [addArea, setAddArea] = useState(false);
+    const [addExtraArea, setaddExtraArea] = useState([{ area: "", noPerson:"" }]);
+    const [studentClass, setStudentClass] = useState('Masjid');
+    
     const handleToggleAddStudent = () => {
-        setaddArea(!addArea);
+        setAddArea(!addArea);
     }
     const handleAddInput = () => {
-        setaddExtraArea([...addExtraArea, { name: "", noPerson: ""}])
+        setaddExtraArea([...addExtraArea, { place: "", noPerson: "" }])
     }
     const handleInputChange = (input, index) => {
         const { name, value } = input.target;
@@ -39,50 +34,96 @@ function Page() {
     }
 
     useEffect(() => {
-            if (!areas || areas.length === 0) {
-                const fetchStudents = async () => {
-                    try {
-                        const res = await fetch('/api/areas');
-                        const json = await res.json();
-                        if (json.success) {
-                            setAreas(json.result);
-                        } else {
-                            console.error(json.error);
-                        }
-                    } catch (error) {
-                        console.error('Fetch failed:', error);
+        if (!areaData || areaData.length === 0) {
+            const fetchAreas = async () => {
+                try {
+                    const res = await fetch('/api/areas');
+                    const json = await res.json();
+                    if (json.success) {
+                        setAreaData(json.result);
+                    } else {
+                        console.error(json.error);
                     }
-                };
-    
-                fetchStudents();
-            }
-        }, []);
-    
-    
-        const fetchStudents = async () => {
-            try {
-                const res = await fetch('/api/areas');
-                const json = await res.json();
-                if (json.success) {
-                    setAreas(json.result);
-                } else {
-                    console.error(json.error);
+                } catch (error) {
+                    console.error('Areas fetch failed:', error);
                 }
-            } catch (error) {
-                console.error('Fetch failed:', error);
+            };
+
+            fetchAreas();
+        }
+    }, []);
+
+
+    const fetchAreas = async () => {
+        try {
+            const res = await fetch('/api/areas');
+            const json = await res.json();
+            if (json.success) {
+                setAreaData(json.result);
+            } else {
+                console.error(json.error);
             }
-        };
-    
+        } catch (error) {
+            console.error('Areas fetch failed:', error);
+        }
+    };
 
-    const fillterData = fillterMenu === "All Areas" ? areas : areas.filter(student => student.area === fillterMenu);
+ const handleSubmit = async () => {
+        if (!studentClass) return alert("Please select a Area!");
 
-    const filterData = fillterMenu === "All Areas"
-        ? areas
-        : areas.filter(student => student.area === fillterMenu);
+        const dataToSend = addExtraArea.map((s) => ({
+            place: s.place,
+            noPerson: s.noPerson,
+            category: studentClass
+        }));
 
-    // const displayedStudents = filterData?.filter(student =>
-    //     area.name.toLowerCase().includes(searchQuery.toLowerCase())
-    // );
+        try {
+            const res = await fetch("/api/areas", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(dataToSend),
+            });
+
+            const result = await res.json();
+            if (result.success) {
+                alert("Area added!");
+                setAddArea(false);
+                setaddExtraArea([{ place: "", noPerson: '' }])
+                fetchAreas();
+
+
+
+                // Optional: Reload or refetch
+            } else {
+                console.error(result.error);
+                alert("Something went wrong");
+            }
+        } catch (err) {
+            console.error(err);
+            alert("Failed to submit");
+        }
+
+    };
+
+
+      const filterData = fillterMenu === "All Areas"
+        ? areaData
+        : areaData.filter(area => area.category === fillterMenu);
+
+    const displayedArea = filterData?.filter(area =>
+        area.place.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
+
+//     const filterData = areaData?.filter(area => {
+//     const matchesCategory = fillterMenu === "All Areas" || area.area === fillterMenu;
+//     const matchesSearch = area.place?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+//                           area.category?.toLowerCase().includes(searchQuery.toLowerCase());
+//     return matchesCategory && matchesSearch;
+// });
+
 
     return (
         <div >
@@ -101,7 +142,7 @@ function Page() {
                                         <option key={index} value={item}>{item}</option>
                                     )}
                                 </select>
-                                <p className='text-sm font-extralight  mt-2 text-gray-300   text-right '>Showing <span className='font-semibold'>{fillterData?.length} </span>Areas</p>
+                                <p className='text-sm font-extralight  mt-2 text-gray-300   text-right '>Showing <span className='font-semibold'>{filterData?.length} </span>Areas</p>
 
                             </div>
                             <div className='relative w-full sm:w-auto'>
@@ -122,13 +163,14 @@ function Page() {
                                 transition={{ duration: 1 }} >
 
 
-                                {fillterData?.map((item, index) =>
+                                {displayedArea?.map((item, index) =>
                                     <div key={index} className={`bg-[#1e1e1e]  py-6 px-8  rounded-xl`}>
                                         <div className='grid grid-cols-5'>
                                             <div className='col-span-4'>
                                                 <h1 className='text-sm sm:text-base md:text-lg font-semibold font-sans'>{item.place}</h1>
-                                                <p className='inline text-gray-300'>{item.area}</p>
-                                            </div>
+                                                <p className='inline text-gray-300'>{item.category}</p>
+<h1>{item.noPerson}</h1>
+         </div>
                                             <div className='flex items-center gap-2 w-10'>
                                                 <Edit size={16} className='cursor-pointer  hover:text-blue-300' />
                                                 <Trash size={16} className='cursor-pointer hover:text-red-300 transition-colors duration-300' />
@@ -144,47 +186,70 @@ function Page() {
                 </div>
             </div>
             {addArea &&
-                <div className="fixed inset-0 bg-opacity-40 flex items-center justify-center">
-                    <div className="bg-white p-6 rounded-lg shadow-lg w-80 text-black">
+              
+                <div className="fixed top-50 right-0 left-0  flex items-center justify-center ">
+                    <div className="bg-[#1e1e1e]  p-6 rounded-lg shadow-lg w-100 ">
                         <div className='flex  justify-between'>
-                            <p className='text-xl font-semibold my-2 inline'>Add details of Area</p>
-                            <CircleX className='mb-2 cursor-pointer' onClick={() => setaddArea(!addArea)} />
+                            <p className='flex text-xl font-semibold mt-4 gap-2'> <Users />   Add Area</p>
+                            <CircleX className='mt-4 cursor-pointer' onClick={() => {
+                                setAddArea(!addArea), setaddExtraArea([{ place: "", noPerson: '' }])
+                              fetchAreas();
+                            }} />
                         </div>
-                        {/* Adding Extra Area inputs */}
-                        {addExtraArea.map((item, index) =>
-                            <div className='grid grid-cols-10' key={index}>
-                                <div className='col-span-10 mr-1'>
+                        <div className='mt-6'><label className='w-full'>Level</label>
+                            <select
+                                value={studentClass}
+                                onChange={(e) => setStudentClass(e.target.value)}
+                                className="w-full border px-3 py-2 mb-4 rounded text-gray-50 bg-[#2e2e2e]">
 
-                                    <input
-                                        type='text'
-                                        name='name'
-                                        value={item.name}
-                                        onChange={(e) => handleInputChange(e, index)}
-                                        className='w-full border px-3 py-2 mb-1 rounded' />
+                                {Class.map((cls, index) =>
+                                    cls === 'All Areas' ? null : <option key={index} value={cls}>{cls}</option>
+                                )}
+                            </select></div>
+                        <div className='max-h-60 overflow-auto'>
+                            {/* Adding Extra student inputs */}
+
+                            {addExtraArea.map((item, index) =>
+                                <div className='grid grid-cols-11 items-center overflow-auto ' key={index}>
+
+                                    <div className='col-span-1 mr-0'>
+                                        {index + 1}
+                                    </div>
+                                    <div className='col-span-7 mr-1'>
+                                        <input
+                                            type='text'
+                                            name='place'
+                                            value={item.place}
+                                            onChange={(e) => handleInputChange(e, index)}
+                                            placeholder='area'
+                                            className='w-full border px-3 py-2 rounded' />
+                                    </div>
+                                    <div className='col-span-3'>
+                                        <input
+                                            type='number'
+                                            name='noPerson'
+                                            placeholder='Quota '
+                                            value={item.noPerson}
+                                            onChange={(e) => handleInputChange(e, index)}
+                                            className='w-full  border px-3 py-2  rounded' />
+
+                                    </div>
                                 </div>
 
-                            </div>)}
-                        <button onClick={() => handleAddInput()} className="flex  w-full justify-end items-center " >
-                            <CirclePlus className="w-4 h-4 mx-1" />
-                            <span className='text-sm'>Add</span>
+                            )}
+                        </div>
+                        <button onClick={() => handleAddInput()} className="flex  w-full justify-end items-center my-2" >
+                            <Plus className="w-4 h-4 mx-1" />
+                            <span>Add</span>
 
                         </button>
 
-                        <label className='w-full'>area</label>
-                        <select
-                            value={studentClass}
-                            onChange={(e) => setStudentClass(e.target.value)}
-                            className="w-full border px-3 py-2 mb-4 rounded">
-
-                            {Class.map((cls, index) =>
-                                cls === 'All Areas' ? null : <option key={index} value={cls}>{cls}</option>
-                            )}
-                        </select>
-
-                        <button className='bg-gray-500 w-full py-2 rounded text-white mt-2 hover:opacity-80 cursor-pointer' type='submit'>Add Area</button>
-
-
-
+                        <button
+                            onClick={handleSubmit}
+                            className='bg-indigo-700 w-full py-2 rounded text-white mt-2 hover:opacity-80 cursor-pointer'
+                        >
+                            Add Areas
+                        </button>
 
 
                     </div>

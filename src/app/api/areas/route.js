@@ -6,8 +6,8 @@ import { NextResponse } from 'next/server';
 export async function GET() {
 
     await mongoose.connect(connectionStr2);
-    const students = await AreasSchema.find();
-    return NextResponse.json({ success: true, result: students });
+    const areas = await AreasSchema.find();
+    return NextResponse.json({ success: true, result: areas });
 }
 
 
@@ -22,7 +22,7 @@ export async function POST(req) {
         }, { status: 400 });
     }
 
-    const inserted = await StudentsSchema.insertMany(payload);
+    const inserted = await AreasSchema.insertMany(payload);
     return NextResponse.json({
         success: true,
         result: inserted
