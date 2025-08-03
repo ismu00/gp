@@ -5,7 +5,7 @@ import { motion } from 'motion/react'
 import { useData } from '@/app/context/DataContext'
 
 const Class = [
-    'All Areas', 'MASJID', 'MNC Ground Floor', 'MNC 1st Floor', 'MNC 2nd Floor', 'MNC Outside'
+    'All Areas', 'MASJID', 'MNC Ground Floor', 'MNC First Floor', 'MNC Second Floor', 'MNC Outside'
 ]
 
 

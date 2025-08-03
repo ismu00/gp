@@ -9,7 +9,10 @@ export default function GenerateTask() {
     const [today, setToday] = useState("");
     const [taskName, setTaskName] = useState("Task 1");
     const [next, setNext] = useState(true)
-    const { studentsNames } = useData()
+    const { studentsNames, setStudentsNames } = useData()
+    const { areaData, setAreaData } = useData()
+    const [cleaningList, setCleaningList] = useState([])
+    const [leftover, setLeftOver] = useState()
 
     useEffect(() => {
         const now = new Date();
@@ -17,63 +20,131 @@ export default function GenerateTask() {
         setToday(formattedDate);
     }, []);
 
+
+
+    useEffect(() => {
+        if (!studentsNames || studentsNames.length === 0) {
+            const fetchStudents = async () => {
+                try {
+                    const res = await fetch('/api/studentsDB');
+                    const json = await res.json();
+                    if (json.success) {
+                        setStudentsNames(json.result);
+                    } else {
+                        console.error(json.error);
+                    }
+                } catch (error) {
+                    console.error('Fetch failed:', error);
+                }
+            };
+
+            fetchStudents();
+        }
+
+
+    }, []);
+
+
+    useEffect(() => {
+        if (!areaData || areaData.length === 0) {
+            const fetchAreas = async () => {
+                try {
+                    const res = await fetch('/api/areas');
+                    const json = await res.json();
+                    if (json.success) {
+                        setAreaData(json.result);
+                    } else {
+                        console.error(json.error);
+                    }
+                } catch (error) {
+                    console.error('Areas fetch failed:', error);
+                }
+            };
+
+            fetchAreas();
+        }
+    }, []);
+
+
     function shuffle(array) {
         return array.sort(() => Math.random() - 0.5);
     }
-
+  
     function generates() {
-        const classMap = {
-            1: shuffle(studentsNames.filter((s) => s.className === "BS 1")),
-            2: shuffle(studentsNames.filter((s) => s.className === "BS 2")),
-            3: shuffle(studentsNames.filter((s) => s.className === "BS 3")),
-            4: shuffle(studentsNames.filter((s) => s.className === "BS 4")),
-            5: shuffle(studentsNames.filter((s) => s.className === "BS 5")),
-        };
-        return console.log(classMap)
-    }
-    function generate() {
-        const assignedSet = new Set(); // Track assigned student names or IDs
+        const assignedSet = new Set(); 
 
-        const classMap = {
-            1: shuffle(students.filter((s) => s.className === "BS 1")),
-            2: shuffle(students.filter((s) => s.className === "BS 2")),
-            3: shuffle(students.filter((s) => s.className === "BS 3")),
-            4: shuffle(students.filter((s) => s.className === "BS 4")),
-            5: shuffle(students.filter((s) => s.className === "BS 5")),
-        };
+        const classMap = [...new Set(studentsNames.map(s => s.className))]
+            .sort((a, b) => {
+                const aNum = parseInt(a.match(/\d+/));
+                const bNum = parseInt(b.match(/\d+/));
+                return aNum - bNum;
+            })
+            .reduce((acc, className, index) => {
+                acc[index + 1] = shuffle(studentsNames.filter(s => s.className === className));
+                return acc;
+            }, {});
+
+        const roomMap = [...new Set(studentsNames.map(s => s.room))]
+            .reduce((acc, room) => {
+                acc[room] = shuffle(studentsNames.filter(s => s.room === room));
+                return acc;
+            }, {});
+
+
+  console.log(
+
+        "before generates",
+        roomMap[16].filter(s => !assignedSet.has(s.name))
+
+    )
+
+
+        const sortedAreaData = areaData.sort((a, b) => {
+            const getPriority = (place) => {
+                const p = place.toLowerCase();
+                if (p.startsWith("class")) return 0;
+                if (p.startsWith("room")) return 1;
+                return 2;
+            };
+            const priorityA = getPriority(a.place);
+            const priorityB = getPriority(b.place);
+            return priorityA !== priorityB
+                ? priorityA - priorityB
+                : a.place.localeCompare(b.place);
+        });
 
         let remaining = [];
 
-        const cleaningAssignments = areas.map((area) => {
-            const areaName = area.area.toLowerCase();
+        const cleaningAssignments = sortedAreaData.map((area) => {
+            const areaName = area.place.toLowerCase();
             let assigned = [];
 
             const assignFromClass = (classNum) => {
-                const pool = classMap[classNum].filter(s => !assignedSet.has(s.name));
+                const pool = classMap[classNum]?.filter(s => !assignedSet.has(s.name)) || [];
                 const selected = pool.slice(0, area.noPerson);
                 selected.forEach(s => assignedSet.add(s.name));
                 return selected;
             };
 
-            if (areaName === "class 1") {
-                assigned = assignFromClass(1);
-            } else if (areaName === "class 2") {
-                assigned = assignFromClass(2);
-            } else if (areaName === "class 3") {
-                assigned = assignFromClass(3);
-            } else if (areaName === "class 4") {
-                assigned = assignFromClass(4);
-            } else if (areaName === "class 5") {
-                assigned = assignFromClass(5);
+            const assignFromRoom = (roomKey) => {
+                const pool = roomMap[roomKey]?.filter(s => !assignedSet.has(s.name)) || [];
+                const selected = pool.slice(0, area.noPerson);
+                selected.forEach(s => assignedSet.add(s.name));
+                return selected;
+            };
+
+            const classMatch = areaName.match(/class (\d+)/);
+            const roomMatch = areaName.match(/room (\d+)/);
+
+            if (classMatch) {
+                const classNum = parseInt(classMatch[1]);
+                assigned = assignFromClass(classNum);
+            } else if (roomMatch) {
+                const roomKey = roomMatch[1];
+                assigned = assignFromRoom(roomKey);
             } else {
                 if (remaining.length === 0) {
-                    remaining = shuffle([
-                        ...classMap[1],
-                        ...classMap[2],
-                        ...classMap[3],
-                        ...classMap[4],
-                        ...classMap[5],
-                    ]);
+                    remaining = Object.values(classMap).flat();
                 }
                 const pool = remaining.filter(s => !assignedSet.has(s.name));
                 assigned = pool.slice(0, area.noPerson);
@@ -86,12 +157,25 @@ export default function GenerateTask() {
             };
         });
 
-        // Leftover students
-        const unassigned = students.filter(s => !assignedSet.has(s.name));
-
+        const unassigned = studentsNames.filter(s => !assignedSet.has(s.name));
         setCleaningList(cleaningAssignments);
         setLeftOver(unassigned.map((s) => s.name));
+
+        
+        console.log("Cleaning List",
+            cleaningAssignments
+            
+        )
+        
+        
+        console.log("After generates",
+            roomMap[16].filter(s => !assignedSet.has(s.name))
+            
+        )
+
+        console.log("Left over", unassigned.map((s) => s.name))
     }
+
 
 
     return (
@@ -176,7 +260,7 @@ export default function GenerateTask() {
 
                         {/* BUTTONS */}
                         <div className="mt-auto flex items-center justify-between px-6 pb-4 gap-2">
-                            <div onClick={() => setNext(!next)} className="flex gap-1 cursor-pointer">
+                            <div onClick={() => console.log("cleaningList", cleaningList)} className="flex gap-1 cursor-pointer">
                                 <MoveLeft className="text-gray-400" />
                                 <button className="flex font-extralight text-gray-400 cursor-pointer">Back</button>
                             </div>
