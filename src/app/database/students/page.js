@@ -13,7 +13,6 @@ const Class = [
 
 function Page() {
 
-
     const [searchQuery, setSearchQuery] = useState("");
     const [vip, setVip] = useState(true);
     const { studentsNames, setStudentsNames } = useData()
@@ -21,7 +20,6 @@ function Page() {
     const [addStudent, setAddStudent] = useState(false);
     const [addExtraStd, setaddExtraStd] = useState([{ name: "", RoomNumber: '' }]);
     const [studentClass, setStudentClass] = useState('BS 1');
-
 
     useEffect(() => {
         if (!studentsNames || studentsNames.length === 0) {
