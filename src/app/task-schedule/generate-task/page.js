@@ -7,24 +7,19 @@ import { useState, useEffect } from "react";
 export default function GenerateTask() {
 
     const [today, setToday] = useState("");
-    const [taskName, setTaskName] = useState("Task 1");
+    const [taskName, setTaskName] = useState("");
     const [next, setNext] = useState(true)
     const { studentsNames, setStudentsNames } = useData()
     const { areaData, setAreaData } = useData()
+    const { taskList, setTaskList } = useData()
     const [cleaningList, setCleaningList] = useState([])
     const [leftover, setLeftOver] = useState()
 
-    useEffect(() => {
-        const now = new Date();
-        const formattedDate = now.toISOString().split("T")[0]; // 'YYYY-MM-DD'
-        setToday(formattedDate);
-    }, []);
-
-
 
     useEffect(() => {
-        if (!studentsNames || studentsNames.length === 0) {
-            const fetchStudents = async () => {
+  const fetchAllData = async () => {
+    if (!studentsNames.length) {
+       const fetchStudents = async () => {
                 try {
                     const res = await fetch('/api/studentsDB');
                     const json = await res.json();
@@ -39,15 +34,9 @@ export default function GenerateTask() {
             };
 
             fetchStudents();
-        }
-
-
-    }, []);
-
-
-    useEffect(() => {
-        if (!areaData || areaData.length === 0) {
-            const fetchAreas = async () => {
+    }
+    if (!areaData.length) {
+      const fetchAreas = async () => {
                 try {
                     const res = await fetch('/api/areas');
                     const json = await res.json();
@@ -62,16 +51,71 @@ export default function GenerateTask() {
             };
 
             fetchAreas();
-        }
+    }
+    if (!taskList.length) {
+      
+            const fetchTaskList = async () => {
+                try {
+                    const res = await fetch('/api/taskList');
+                    const json = await res.json();
+                    if (json.success) {
+                        setTaskList(json.result);
+                    } else {
+                        console.error(json.error);
+                    }
+                } catch (error) {
+                    console.error('Tasklist fetch failed:', error);
+                }
+            };
+            fetchTaskList();
+
+            setTaskName(`Task ${taskList?.length}`);
+    }
+  };
+  fetchAllData();
+}, []);
+
+
+    useEffect(() => {
+        const now = new Date();
+        const formattedDate = now.toISOString().split("T")[0]; // 'YYYY-MM-DD'
+        setToday(formattedDate);
     }, []);
+
+    useEffect(() => {
+        if (cleaningList.length > 0) {
+            saveTaskToDB();
+        }
+    }, [cleaningList]);
+
+
+
+    useEffect(() => {
+
+        if (taskList.length === 0) {
+
+        } else {
+
+            setTaskName(`Task ${taskList?.length}`);
+        }
+    }, [taskList]);
+
+
+useEffect(() => {
+  if (taskList && taskList.length >= 0) {
+    setTaskName(`Task ${taskList.length + 1}`);
+  }
+}, [taskList]);
 
 
     function shuffle(array) {
         return array.sort(() => Math.random() - 0.5);
     }
-  
+
+
+
     function generates() {
-        const assignedSet = new Set(); 
+        const assignedSet = new Set();
 
         const classMap = [...new Set(studentsNames.map(s => s.className))]
             .sort((a, b) => {
@@ -91,12 +135,12 @@ export default function GenerateTask() {
             }, {});
 
 
-  console.log(
+        console.log(
 
-        "before generates",
-        roomMap[16].filter(s => !assignedSet.has(s.name))
+            "before generates",
+            roomMap[16].filter(s => !assignedSet.has(s.name))
 
-    )
+        )
 
 
         const sortedAreaData = areaData.sort((a, b) => {
@@ -161,20 +205,52 @@ export default function GenerateTask() {
         setCleaningList(cleaningAssignments);
         setLeftOver(unassigned.map((s) => s.name));
 
-        
+
         console.log("Cleaning List",
             cleaningAssignments
-            
+
         )
-        
-        
+
+
         console.log("After generates",
             roomMap[16].filter(s => !assignedSet.has(s.name))
-            
+
         )
 
         console.log("Left over", unassigned.map((s) => s.name))
     }
+
+    const saveTaskToDB = async () => {
+        const description = document.querySelector("textarea").value;
+
+        const data = {
+            taskName,
+            status: false,
+            date: today,
+            description,
+            cleaningList,
+            leftover,
+        };
+
+        try {
+            const res = await fetch('/api/taskList', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data),
+            });
+
+            const result = await res.json();
+
+            if (res.ok) {
+                alert("Task saved to database!");
+            } else {
+                alert(`Failed to save: ${result.error}`);
+            }
+        } catch (err) {
+            console.error("Save error:", err);
+            alert("An error occurred while saving.");
+        }
+    };
 
 
 
@@ -266,8 +342,15 @@ export default function GenerateTask() {
                             </div>
                             <div className="flex gap-1">
                                 <button
-                                    onClick={() => generates()}
-                                    className="font-bold py-2 px-8 bg-green-800 hover:bg-green-700 transition-colors duration-300 rounded-lg cursor-pointer">Generate</button>
+                                    onClick={() => {
+                                        generates();
+                                        // delay to ensure state update
+                                    }}
+                                    className="font-bold py-2 px-8 bg-green-800 hover:bg-green-700 transition-colors duration-300 rounded-lg cursor-pointer"
+                                >
+                                    Generate
+                                </button>
+
                             </div>
                         </div>
                     </motion.div>

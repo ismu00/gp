@@ -74,7 +74,7 @@ const secondaryNav = [
 ]
 
 export default function Sidebar() {
-  const [isOpen, setIsopen] = useState(true)
+  const [isOpen, setIsopen] = useState(false)
   const pathname = usePathname()
   console.log(pathname)
   return (

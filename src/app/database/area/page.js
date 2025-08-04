@@ -68,6 +68,28 @@ function Page() {
         }
     };
 
+const handleDelete = async (id) => {
+
+  try {
+    const res = await fetch(`/api/areas/${id}`, {
+      method: 'DELETE',
+    });
+
+    const data = await res.json();
+
+    if (res.ok) {
+      alert("Deleted successfully!");
+      // Optionally update UI state, like removing the item from list
+    } else {
+      alert(`Delete failed: ${data.message}`);
+    }
+  } catch (err) {
+    alert("Something went wrong while deleting.");
+    console.error(err);
+  }
+};
+
+
  const handleSubmit = async () => {
         if (!studentClass) return alert("Please select a Area!");
 
@@ -173,7 +195,7 @@ function Page() {
          </div>
                                             <div className='flex items-center gap-2 w-10'>
                                                 <Edit size={16} className='cursor-pointer  hover:text-blue-300' />
-                                                <Trash size={16} className='cursor-pointer hover:text-red-300 transition-colors duration-300' />
+                                                <Trash onClick={()=>handleDelete(item._id)} size={16} className='cursor-pointer hover:text-red-300 transition-colors duration-300' />
 
                                             </div>
                                         </div>

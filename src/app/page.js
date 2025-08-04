@@ -5,9 +5,11 @@ import { useData } from './context/DataContext';
 import Overview from './overview/page';
 
 export default function Home() {
-  const { studentsNames, setStudentsNames, areaData, setAreaData } = useData();
+  const { studentsNames, setStudentsNames, areaData, setAreaData, taskList, setTaskList } = useData();
 
   useEffect(() => {
+            if (!studentsNames || studentsNames.length === 0) {
+
     const fetchStudents = async () => {
       try {
         const res = await fetch('/api/studentsDB');
@@ -36,8 +38,27 @@ export default function Home() {
       }
     };
 
+
+   const fetchTaskList = async () => {
+      try {
+        const res = await fetch('api/taskList');
+        const json = await res.json();
+        if (json.success) {
+          setTaskList(json.result);
+        } else {
+          console.error(json.error);
+        }
+      } catch (error) {
+        console.error('Tasklist fetch failed:', error);
+      }
+    };
+
+
+
     fetchStudents();
     fetchAreas();
+    fetchTaskList();
+  }
   }, []);
 
   useEffect(() => {
@@ -47,6 +68,10 @@ export default function Home() {
   useEffect(() => {
     console.log('Updated areas from context:', areaData);
   }, [areaData]);
+
+  useEffect(() => {
+    console.log('Updated Task List from context:', taskList);
+  }, [taskList]);
 
   return (
     <div>

@@ -1,6 +1,10 @@
 'use client'
+import { useEffect, useRef } from 'react'
 import { motion } from 'motion/react'
+import Link from 'next/link'
+import { useData } from '../context/DataContext'
 import StateCart from '@/app/components/StateCart'
+import TableData from '@/app/components/TableData'
 import {
   IndianRupee,
   BrushCleaning,
@@ -9,9 +13,36 @@ import {
   CalendarDays,
   Plus,
 } from 'lucide-react'
-import TableData from '@/app/components/TableData'
-import Link from 'next/link'
+
 export default function List() {
+  const { taskList, setTaskList } = useData()
+
+  useEffect(() => {
+
+
+
+    if (!taskList.length) {
+
+      const fetchTaskList = async () => {
+        try {
+          const res = await fetch('/api/taskList');
+          const json = await res.json();
+          if (json.success) {
+            setTaskList(json.result);
+          } else {
+            console.error(json.error);
+          }
+        } catch (error) {
+          console.error('Tasklist fetch failed:', error);
+        }
+      };
+      fetchTaskList();
+    }
+
+
+  }, [])
+
+
   return (
     <div className='flex-1 overflow-hidden relative z-10'>
       <main className='max-w-7xl mx-auto py-6 px-4 lg:py-8'>
@@ -21,32 +52,29 @@ export default function List() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1 }}
         >
-          <StateCart
-            name='Total Tasks'
-            icon={BrushCleaning}
-            value='20'
-          />
+          <StateCart name='Total Tasks' icon={BrushCleaning} value={taskList.length} />
           <StateCart name='Weekly Tasks' icon={CalendarDays} value='2' />
           <StateCart name='Upcoming Tasks' icon={CalendarFold} value='1' />
           <StateCart name='Pending' icon={ClockAlert} value='0' />
         </motion.div>
       </main>
 
-    <Link href='/task-schedule/generate-task'>
-    <div className='grid grid-cols-1 lg:grid-cols-2 gap-8 overflow-hidden'>
-        <motion.div
-          className='flex flex-col items-center mb-8 mt-1 h-40 w-40 justify-center  mx-10 cursor-pointer bg-[#1e1e1e] outline-1 outline-gray-600   transition-colors duration-300 hover:bg-[#2f2f2f] rounded-lg backdrop-blur-md shadow-lg'
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1 }}
-        >
-          <Plus className='text-gray-100 mt-2 ' size={40} />
-          <h1 className='text-md font-medium text-gray-100 pt-2'>Create New</h1>
-        </motion.div>
-      </div></Link>
-      <hr className=' mx-4 opacity-25' />
-      <TableData />
-      <div className='grid grid-cols-1 lg:grid-cols-2 gap-8 overflow-hidden '></div>
+      <Link href='/task-schedule/generate-task'>
+        <div className='grid grid-cols-1 lg:grid-cols-2 gap-8 overflow-hidden'>
+          <motion.div
+            className='flex flex-col items-center mb-8 mt-1 h-40 w-40 justify-center  mx-10 cursor-pointer bg-[#1e1e1e] outline-1 outline-gray-600 transition-colors duration-300 hover:bg-[#2f2f2f] rounded-lg backdrop-blur-md shadow-lg'
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1 }}
+          >
+            <Plus className='text-gray-100 mt-2' size={40} />
+            <h1 className='text-md font-medium text-gray-100 pt-2'>Create New</h1>
+          </motion.div>
+        </div>
+      </Link>
+
+      <hr className='mx-4 opacity-25' />
+      <TableData taskList={taskList} />
     </div>
-  )
+  );
 }

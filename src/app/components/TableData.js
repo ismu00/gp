@@ -3,7 +3,7 @@ import React, { useState } from 'react'
 import { motion } from 'framer-motion' // fixed import
 import { DeleteIcon, Edit, Search, Trash2 } from 'lucide-react'
 
-function TableData() {
+function TableData({taskList}) {
   const demiData = [
     { id: 1, name: "Week 01", date: "July 21 Wed ", email: "midl@example.com", status:"completed" },
     { id: 1, name: "Week 01", date: "July 21 Wed ", email: "midl@example.com", status:"pending" },
@@ -57,7 +57,7 @@ function TableData() {
           </thead>
           <tbody className='divide-y divide-gray-700'>
 
-            {demiData.map((item, index) => (
+            {taskList.map((item, index) => (
               <motion.tr
                 key={index}
                 initial={{ opacity: 0, y: 10 }}
@@ -93,7 +93,7 @@ function TableData() {
             ))}
 
 
-            {demiData.map((item, index) => (
+            {taskList.map((item, index) => (
               <motion.tr
                 key={index}
                 initial={{ opacity: 0, y: 10 }}
@@ -101,11 +101,11 @@ function TableData() {
                 transition={{ delay: index * 0.1, duration: 0.3 }}
                 className='hidden  sm:table-row mb-4 sm:mb-0   border-b-0 border=gray-700 sm:border-none p-2 sm:p-0 hover:bg-[#2b2b2b]'>
                 <td className='px-3 sm:px-6 py-2 sm:py-3 text-white hidden sm:table-cell'>{index + 1}</td>
-                <td className='px-3 sm:px-6 py-2 sm:py-3 text-white hidden sm:table-cell'>{item.name}</td>
+                <td className='px-3 sm:px-6 py-2 sm:py-3 text-white hidden sm:table-cell'>{item.taskName}</td>
                 <td className='px-3 sm:px-6 py-2 sm:py-3 text-white hidden sm:table-cell'>{item.date}</td>
                 <td className='px-3 sm:px-6 py-2 sm:py-3  text-white hidden sm:table-cell  '>
                   <div className='flex items-center'>
-                    <button className={`text-sm    px-3 py-1 rounded-md ${item.status === "pending" ? "bg-amber-700" : "bg-green-700"} `}>{item.status}</button>
+                    <button className={`text-sm    px-3 py-1 rounded-md ${item.status ? "bg-green-700": "bg-amber-700"} `}>{item.status ? "Complete": "Pending"}</button>
                   </div>
                 </td>
                 <td className='px-3 sm:px-6 py-2 sm:py-3  text-white hidden sm:table-cell  '>

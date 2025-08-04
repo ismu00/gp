@@ -6,9 +6,10 @@ const DataContext = createContext();
 export const DataProvider = ({ children }) => {
   const [studentsNames, setStudentsNames] = useState([]);
   const [areaData, setAreaData] = useState([]);
+  const [taskList, setTaskList] = useState([]);
   return (
     <DataContext.Provider value={{ studentsNames, setStudentsNames,
-      areaData, setAreaData
+      areaData, setAreaData, taskList, setTaskList
      }}>
       {children}
     </DataContext.Provider>
