@@ -1,7 +1,7 @@
 import TableData from '@/app/components/TableData'
 import { notFound } from 'next/navigation'
 import EachTaskData from '../page'
-import { Edit, Search, Trash2 } from 'lucide-react'
+import { Edit, Printer, Search, Trash2 } from 'lucide-react'
 
 // simulate DB/API call
 async function getTaskById(id) {
@@ -24,56 +24,23 @@ export default async function ItemPage({ params }) {
     }
 
     return (
-        <div className="p-6">
+        <div className="p- 2">
 
 
             <div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 1 }}
-                className='bg-[#1e1e1e] mt-8 backdrop-blur-md shadow-lg rounded-xl p-4 md:p-6 border border-[#1f1f1f] mx-2 md:mx-6 my-4'
+                className='bg-[#1e1e1e] h-150 overflow-y-scroll
+                 mt-8 backdrop-blur-md shadow-lg rounded-xl p-4 md:p-6 border border-[#1f1f1f] mx-2 md:mx-6 my-4'
             >
+            
 
-                <div
-
-                    className='bg-[#2e2e2e] flex justify-between items-center mt-2 backdrop-blur-md shadow-lg rounded-xl p-4 md:p-6 border border-[#1f1f1f] mx-2 md:mx-6 my-4'
-                ><h2 className='text-lg sm:text-xl font-semibold text-gray-100 text-center sm:text-left'>
-                        {item.taskName}
-                    </h2>
-                    {["Masjid", "MNC Ground Floor", "MNC Firs Floor", "MNC Second Floor", "MNC Outside"].map((item, index) => (
-                        <p
-                            key={index}
-                            className='px-3 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider hidden sm:table-cell'
-                        >
-                            {item}
-                        </p>
-
-
-                    ))}
-
-                </div>
-                {/* <div className='flex flex-col sm:flex-row justify-between items-center mb-6 gap-4 sm:gap-0'>
-                    <h2 className='text-lg sm:text-xl font-semibold text-gray-100 text-center sm:text-left'>
-                        {item.taskName}
-                    </h2>
-                    <div className='relative w-full sm:w-auto'>
-                        <input
-                            type="text"
-                            placeholder='Search Here'
-                            className='bg-[#2f2f2f] text-white placeholder-gray-400 rounded-lg pl-10 pr-4 py-2 w-full sm:w-64 focus:outline-none focus:ring-2 focus:ring-gray-500 transition duration-200 text-sm'
-                        // value={searchQuery}
-                        // onChange={(e) => setSearchQuery(e.target.value)}
-                        />
-                        <Search className='absolute left-3 top-2.5 text-gray-400' size={18} />
-                    </div>
-
-                </div> */}
-
-                <div className='overflow-x-none'>
+                <div className=''>
                     <table className='min-w-full divide-y divide-gray-700'>
                         <thead>
                             <tr>
-                                {["No", "Task", "Date", "Status", "Action"].map((item, index) => (
+                                {["No", "Task", "Assignment"].map((item, index) => (
                                     <th
                                         key={index}
                                         className='px-3 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider hidden sm:table-cell'
@@ -85,13 +52,13 @@ export default async function ItemPage({ params }) {
                                 ))}
                             </tr>
                         </thead>
-                        <tbody className='divide-y divide-gray-700'>
+                        <tbody className='divide-y  divide-gray-700'>
 
                             <tr
                                 initial={{ opacity: 0, y: 10 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 className='flex flex-col sm:table-row mb-4 sm:mb-0 border-b sm:border-b-0 border-gray-700
-              sm:border-none p-2 sm:p-0'>
+                                  sm:border-none p-2 sm:p-0'>
 
                                 {/* mobile View */}
 
@@ -112,9 +79,7 @@ export default async function ItemPage({ params }) {
                                     </div>
                                 </td>
 
-                                {/* ============== */}
-
-                                {/* <td className='hidden sm:table-cell px-6 py-4 whitespace-now'></td> */}
+                            
 
                             </tr>
 
@@ -126,7 +91,7 @@ export default async function ItemPage({ params }) {
                                     initial={{ opacity: 0, y: 10 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ delay: index * 0.1, duration: 0.3 }}
-                                    className='hidden sm:table-row mb-4 sm:mb-0 border-b-0 border=gray-700 sm:border-none p-2 sm:p-0 hover:bg-[#2b2b2b]'
+                                    className='hidden overflow-auto sm:table-row mb-4 sm:mb-0 border-b-0 border=gray-700 sm:border-none p-2 sm:p-0 hover:bg-[#2b2b2b]'
                                 >
                                     <td className='align-top px-3 sm:px-6 py-2 sm:py-3 text-white hidden sm:table-cell'>{index + 1}</td>
                                     <td className='align-top px-3 sm:px-6 py-2 sm:py-3 text-white hidden sm:table-cell'>{item.place}</td>
@@ -136,21 +101,11 @@ export default async function ItemPage({ params }) {
                                         ))}
                                     </td>
                                     <td className='align-top px-3 sm:px-6 py-2 sm:py-3 text-white hidden sm:table-cell'>
-                                        <div className='flex items-center'>
-                                            <button className={`text-sm px-3 py-1 rounded-md ${item.status ? "bg-green-700" : "bg-amber-700"}`}>
-                                                {item.status ? "Complete" : "Pending"}
-                                            </button>
-                                        </div>
+
                                     </td>
                                     <td className='align-top px-3 sm:px-6 py-2 sm:py-3 text-white hidden sm:table-cell'>
-                                        <div className='flex items-center gap-2'>
-                                            <button className='text-sm cursor-pointer bg-blue-700 hover:bg-blue-800 transition-colors duration-200 px-3 py-1 rounded-md'>
-                                                Open
-                                            </button>
-                                            <button className='text-sm px-3 py-1 rounded-md'>
-                                                <Trash2 size={18} />
-                                            </button>
-                                        </div>
+
+
                                     </td>
                                 </tr>
                             ))}
@@ -159,6 +114,9 @@ export default async function ItemPage({ params }) {
                         </tbody>
                     </table>
                 </div>
+                    <div> 
+                    </div>
+ <button className='text-sm absolute   text-indigo-500 hover:text-indigo-300'><Printer size={16} /></button>                       
             </div>
         </div>
     )
