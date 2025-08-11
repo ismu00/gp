@@ -2,6 +2,8 @@
 import { useEffect, useRef } from 'react'
 import { motion } from 'motion/react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+
 import { useData } from '../context/DataContext'
 import StateCart from '@/app/components/StateCart'
 import TableData from '@/app/components/TableData'
@@ -16,6 +18,7 @@ import {
 
 export default function List() {
   const { taskList, setTaskList } = useData()
+   const router = useRouter()
 
   useEffect(() => {
 
@@ -41,6 +44,10 @@ export default function List() {
 
 
   }, [])
+
+ const getEachTask = (item) => {
+    router.push(`/task-schedule/${item._id}`)
+  }
 
 
   return (
@@ -74,7 +81,7 @@ export default function List() {
       </Link>
 
       <hr className='mx-4 opacity-25' />
-      <TableData taskList={taskList} />
+      <TableData taskList={taskList} getEachTask={getEachTask}/>
     </div>
   );
 }

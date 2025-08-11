@@ -3,6 +3,8 @@ import React, { useEffect, useState } from 'react'
 import { SquarePlus, CircleX, Plus, Trash, CirclePlus, Edit, Search, Users } from 'lucide-react'
 import { motion } from 'motion/react'
 import { useData } from '@/app/context/DataContext'
+import Swal from 'sweetalert2'
+import 'sweetalert2/dist/sweetalert2.min.css'
 
 const Class = [
     'All Areas', 'MASJID', 'MNC Ground Floor', 'MNC First Floor', 'MNC Second Floor', 'MNC Outside'
@@ -147,6 +149,34 @@ const handleDelete = async (id) => {
 // });
 
 
+
+const handleDeletes = () => {
+  Swal.fire({
+    title: 'Are you sure to Delete?',
+    text: 'Once deleted, you will not be able to recover this file!',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Yes, delete it!',
+    cancelButtonText: 'Cancel',
+      background: '#dc2626', // Tailwind's red-600 hex value
+  color: '#fff',          // Make text white for contrast
+
+    customClass: {
+      popup: 'rounded-lg p-2 bg-red-200',
+      title: 'text-lg font-semibold text-red-100',
+      htmlContainer: 'text-sm text-gray-700',
+      confirmButton: 'bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded',
+      cancelButton: 'bg-gray-300 hover:bg-gray-400 text-black font-medium py-2 px-4 rounded ml-2',
+    },
+  }).then((result) => {
+    if (result.isConfirmed) {
+      Swal.fire('Deleted!', 'Your file has been deleted.', 'success')
+    } else {
+      Swal.fire('Cancelled', 'Your file is safe 🙂', 'info')
+    }
+  })
+}
+
     return (
         <div >
             <div className={`${addArea ? 'blur-sm' : ''} mx-4  `}>
@@ -195,7 +225,7 @@ const handleDelete = async (id) => {
          </div>
                                             <div className='flex items-center gap-2 w-10'>
                                                 <Edit size={16} className='cursor-pointer  hover:text-blue-300' />
-                                                <Trash onClick={()=>handleDelete(item._id)} size={16} className='cursor-pointer hover:text-red-300 transition-colors duration-300' />
+                                                <Trash onClick={()=>handleDeletes(item._id)} size={16} className='cursor-pointer hover:text-red-300 transition-colors duration-300' />
 
                                             </div>
                                         </div>

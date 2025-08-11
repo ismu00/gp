@@ -98,7 +98,7 @@ export default function Sidebar() {
               <Link key={name} href={path}>
                 <div
                   className={`flex  items-center p-4  text-sm font-medium rounded-lg hover:bg-[#2f2f2f] transition-colors mb-2 ${
-                    pathname === path ? 'bg-[#2f2f2f]' : ''
+                    (path === '/' && pathname === '/') || (path !== '/' && pathname.startsWith(path)) ? 'bg-[#2f2f2f]' : ''
                   }`}
                 >
                   <IconComponent

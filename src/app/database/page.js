@@ -22,7 +22,7 @@ export default function Database() {
                     transition={{ duration: 1 }}>
                     {studentAreaAssignments.map((item, index) =>
                         <Link key={index} href={item.href}>
-                            <div className='bg-[#1e1e1e] hover:bg-[#2f2f2f] transition-colors duration-300  min-h-60 min-w-60 flex flex-col items-center justify-center flex-wrap gap-4  m-2 ml-0 rounded-lg p-6 px-4 text-gray-100 ' >
+                            <div className='bg-[#1e1e1e] hover:bg-[#2f2f2f] backdrop-blur-md  shadow-lg transition-colors duration-300  min-h-60 min-w-60 flex flex-col items-center justify-center flex-wrap gap-4  m-2 ml-0 rounded-lg p-6 px-4 text-gray-100 ' >
 
                                 <item.icon size={40} className='text-gray-100' />
 
