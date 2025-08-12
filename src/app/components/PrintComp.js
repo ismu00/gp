@@ -34,7 +34,8 @@ function PrintComp({ data }) {
                     <thead className="bg-gray-100">
                         <tr>
                             {["No", "Task", "Assignment"].map((col, index) => (
-                                <th key={index} className="px-4 py-2 border border-gray-300 text-left">
+                                <th key={index} 
+                                className="px-4 py-2 border border-gray-300 text-left">
                                     {col}
                                 </th>
                             ))}
@@ -45,11 +46,9 @@ function PrintComp({ data }) {
                             <tr key={index}>
                                 <td className="px-4 py-2  text-gray-950 border border-gray-300">{index + 1}</td>
                                 <td className="px-4 py-2  text-gray-950 border border-gray-300">{task.place}</td>
-                                <td className="px-4 py-2  text-gray-950 border border-gray-300">
-                                    {task.cleaner.map((person, idx) => (
-                                        <p key={idx}>{person}</p>
-                                    ))}
-                                </td>
+                           <td className="px-4 py-2 text-gray-950 border border-gray-300">
+    {task.cleaner.join(", ")}
+</td>
                             </tr>
                         ))}
                     </tbody>

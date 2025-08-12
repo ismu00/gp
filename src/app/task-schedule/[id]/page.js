@@ -5,7 +5,7 @@ import PrintComp from '@/app/components/PrintComp'
 
 // simulate DB/API call
 async function getTaskById(id) {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || ''} http://localhost:3000//api/taskList/${id}`, {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || ''} https://gp-silk.vercel.app/api/taskList/${id}`, {
   cache: 'no-store',
 })
 
