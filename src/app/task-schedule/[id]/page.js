@@ -1,7 +1,7 @@
 import TableData from '@/app/components/TableData'
 import { notFound } from 'next/navigation'
 import EachTaskData from '../page'
-import { Edit, Printer, Search, Trash2 } from 'lucide-react'
+import PrintComp from '@/app/components/PrintComp'
 
 // simulate DB/API call
 async function getTaskById(id) {
@@ -23,7 +23,7 @@ export default async function ItemPage({ params }) {
   if (!item) return notFound()
 
   return (
-    <div className="flex flex-col h-[calc(100vh-120px)]  text-white p-4">
+    <div className="flex flex-col h-[calc(100vh-115px)]  text-white p-4">
      
 
       {/* Scrollable Table Container */}
@@ -61,10 +61,11 @@ export default async function ItemPage({ params }) {
         </div>
       </div>
        {/* Fixed Header or Info Area */}
-      <div className="h-[10px] w-full bg-gray-800 p-4">
-        <h1 className="text-2xl font-bold">{item.name}</h1>
-        <p className="text-gray-400">{item.date}</p>
-      </div>
+ <div className="w-full gap-1.5  p-4 flex justify-end">
+<PrintComp data={item}/>
+
+</div>
+
     </div>
   )
 }

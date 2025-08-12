@@ -16,6 +16,7 @@
     "next": "15.4.2",
     "react": "19.1.0",
     "react-dom": "19.1.0",
+    "react-to-print": "^3.1.1",
     "recharts": "^3.1.0",
     "sweetalert": "^2.1.2",
     "sweetalert2": "^11.22.2"
