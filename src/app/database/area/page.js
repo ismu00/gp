@@ -20,6 +20,7 @@ function Page() {
     const [addArea, setAddArea] = useState(false);
     const [addExtraArea, setaddExtraArea] = useState([{ area: "", noPerson:"" }]);
     const [studentClass, setStudentClass] = useState('Masjid');
+    const [isSubmitting, setIsSubmitting] = useState(false)
     
     const handleToggleAddStudent = () => {
         setAddArea(!addArea);
@@ -93,44 +94,42 @@ const handleDelete = async (id) => {
 
 
  const handleSubmit = async () => {
-        if (!studentClass) return alert("Please select a Area!");
+    if (!studentClass) return alert("Please select an Area!");
 
-        const dataToSend = addExtraArea.map((s) => ({
-            place: s.place,
-            noPerson: s.noPerson,
-            category: studentClass
-        }));
+    setIsSubmitting(true); // Disable button + change text
 
-        try {
-            const res = await fetch("/api/areas", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(dataToSend),
-            });
+    const dataToSend = addExtraArea.map((s) => ({
+        place: s.place,
+        noPerson: s.noPerson,
+        category: studentClass
+    }));
 
-            const result = await res.json();
-            if (result.success) {
-                alert("Area added!");
-                setAddArea(false);
-                setaddExtraArea([{ place: "", noPerson: '' }])
-                fetchAreas();
+    try {
+        const res = await fetch("/api/areas", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(dataToSend),
+        });
 
-
-
-                // Optional: Reload or refetch
-            } else {
-                console.error(result.error);
-                alert("Something went wrong");
-            }
-        } catch (err) {
-            console.error(err);
-            alert("Failed to submit");
+        const result = await res.json();
+        if (result.success) {
+            alert("Area added!");
+            setAddArea(false);
+            setaddExtraArea([{ place: "", noPerson: '' }]);
+            fetchAreas();
+        } else {
+            console.error(result.error);
+            alert("Something went wrong");
         }
-
-    };
-
+    } catch (err) {
+        console.error(err);
+        alert("Failed to submit");
+    } finally {
+        setIsSubmitting(false); // Re-enable button
+    }
+};
 
       const filterData = fillterMenu === "All Areas"
         ? areaData
@@ -296,12 +295,14 @@ const handleDeletes = () => {
 
                         </button>
 
-                        <button
-                            onClick={handleSubmit}
-                            className='bg-indigo-700 w-full py-2 rounded text-white mt-2 hover:opacity-80 cursor-pointer'
-                        >
-                            Add Areas
-                        </button>
+                    <button
+    onClick={handleSubmit}
+    disabled={isSubmitting}
+    className={`bg-indigo-700 w-full py-2 rounded text-white mt-2 hover:opacity-80 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed`}
+>
+    {isSubmitting ? "Adding..." : "Add Areas"}
+</button>
+
 
 
                     </div>
