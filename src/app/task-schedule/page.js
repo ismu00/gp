@@ -1,5 +1,5 @@
 'use client'
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { motion } from 'motion/react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
@@ -18,6 +18,8 @@ import {
 
 export default function List() {
   const { taskList, setTaskList } = useData()
+    const [loading, setLoading] = useState(false)
+
    const router = useRouter()
 
   useEffect(() => {
@@ -28,6 +30,7 @@ export default function List() {
 
       const fetchTaskList = async () => {
         try {
+          setLoading(true)
           const res = await fetch('/api/taskList');
           const json = await res.json();
           if (json.success) {
@@ -37,6 +40,9 @@ export default function List() {
           }
         } catch (error) {
           console.error('Tasklist fetch failed:', error);
+        }finally{
+                    setLoading(false)
+
         }
       };
       fetchTaskList();
@@ -81,7 +87,7 @@ export default function List() {
       </Link>
 
       <hr className='mx-4 opacity-25' />
-      <TableData taskList={taskList} getEachTask={getEachTask}/>
+      <TableData taskList={taskList} getEachTask={getEachTask} loading={loading}/>
     </div>
   );
 }

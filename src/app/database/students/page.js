@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react'
 import { CircleX, UserRoundPlus, Trash, Plus, Search, ClipboardList, Users, Edit } from 'lucide-react'
 import { useData } from '@/app/context/DataContext';
 import { motion } from 'motion/react'
+import { Loader2 } from 'lucide-react' // add this import at top
 
 const Class = [
     'All Classes', 'BS 1', 'BS 2', 'BS 3', 'BS 4', 'BS 5'
@@ -20,11 +21,23 @@ function Page() {
     const [addStudent, setAddStudent] = useState(false);
     const [addExtraStd, setaddExtraStd] = useState([{ name: "", RoomNumber: '' }]);
     const [studentClass, setStudentClass] = useState('BS 1');
+    const [isSubmitting, setIsSubmitting] = useState(false)
+      const [loading, setLoading] = useState(true)
+
+
+
+  useEffect(() => {
+    if (studentsNames || studentsNames.lenght > 0) {
+      setLoading(false)
+    }
+  }, [])
+
 
     useEffect(() => {
         if (!studentsNames || studentsNames.length === 0) {
             const fetchStudents = async () => {
                 try {
+                   setLoading(true); 
                     const res = await fetch('/api/studentsDB');
                     const json = await res.json();
                     if (json.success) {
@@ -34,6 +47,8 @@ function Page() {
                     }
                 } catch (error) {
                     console.error('Fetch failed:', error);
+                }finally{
+                    setLoading(false)
                 }
             };
 
@@ -80,6 +95,7 @@ function Page() {
     // Add this inside your component:
     const handleSubmit = async () => {
         if (!studentClass) return alert("Please select a class!");
+    setIsSubmitting(true); // Disable button + change text
 
         const dataToSend = addExtraStd.map((s) => ({
             name: s.name,
@@ -113,7 +129,9 @@ function Page() {
         } catch (err) {
             console.error(err);
             alert("Failed to submit");
-        }
+        } finally {
+        setIsSubmitting(false); // Re-enable button
+    }
 
     };
 
@@ -158,6 +176,29 @@ function Page() {
                             </div>
                         </div>
                         <div>
+
+
+{loading ? (
+                <div className="flex flex-col justify-center items-center py-10 gap-2 h-[calc(100vh-400px)] w-full">
+                  <Loader2 className="animate-spin text-gray-300" size={36} />
+                  <span className="text-gray-400 text-sm">Loading...</span>
+                </div>
+              ) : displayedStudents?.length === 0 ? (
+                <div className="flex flex-col justify-center items-center py-10 gap-3 h-[calc(100vh-400px)] w-full text-center">
+                  <p className="text-gray-400">No areas found.
+                    <br /> This might be due to a network issue.
+                  </p>
+                  <button
+                    onClick={fetchStudents}
+                    className="bg-gray-700 cursor-pointer hover:bg-gray-600 text-white px-4 py-2 rounded"
+                  >
+                    Retry
+                  </button>
+                </div>
+              ) : (
+
+
+
                             <motion.div className='grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3  gap-2 mx-2 sm:mx-4 md:mx-8 pb-8'
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
@@ -178,7 +219,7 @@ function Page() {
                                         </div>
                                     </div>
                                 )}
-                            </motion.div>
+                            </motion.div>)}
                         </div>
                     </div>
 
@@ -244,9 +285,10 @@ function Page() {
 
                         <button
                             onClick={handleSubmit}
-                            className='bg-indigo-700 w-full py-2 rounded text-white mt-2 hover:opacity-80 cursor-pointer'
+                            disabled={isSubmitting}
+                            className={`bg-indigo-700 w-full py-2 rounded text-white mt-2 hover:opacity-80 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed`}
                         >
-                            Add Student
+                            {isSubmitting ? "Adding..." : "Add Students"}
                         </button>
 
 

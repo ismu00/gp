@@ -34,6 +34,17 @@ const primaryNav = [
     path: '/database/students',
     icon: 'Bot',
 
+  },{
+    name: 'Area Database',
+    path: '/database/area',
+    icon: 'Bot',
+
+  },
+  {
+    name: 'Permanent List',
+    path: '/database/permanent',
+    icon: 'Bot',
+
   },
   {
     name: 'Create New Task',
@@ -54,7 +65,7 @@ export default function Header() {
     <header className="bg-[#1e1e1e] shadow-lg border-b border-[#1f1f1f] mx-4 sm:mx-6 lg:mx-8 mt-4 mb-2 rounded-lg">
       <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 flex items-center justify-between">
      <div className="flex items-center gap-2">
-{(pathname === '/database/students' || pathname === '/database/area') && (
+{(pathname === '/database/students' || pathname === '/database/area'  || pathname === '/database/permanent') && (
   <Link href='/database'>
     <CircleChevronLeft />
   </Link>

@@ -2,12 +2,15 @@
 import Link from 'next/link';
 import { motion } from 'motion/react'
 
-import { BrushCleaning, ToolCase, UsersRound } from 'lucide-react';
+import { BrushCleaning, NotebookTabs, ToolCase, UsersRound } from 'lucide-react';
 let studentAreaAssignments = [
     { label: "Students Database", icon: UsersRound, href: "/database/students", no: 291 },
     { label: "Area Database", icon: BrushCleaning, href: "/database/area", no: 291 },
-    { label: "Equipments Database", icon: ToolCase, href: "/database/equipments", no: 291 },
+    { label: "Permanent Task", icon: NotebookTabs, href: "/database/permanent", no: 291 },
+    { label: "Equipments Database", icon: ToolCase , href: "/database/equipments", no: 291 },
 ]
+
+
 
 export default function Database() {
     return (

@@ -1,20 +1,19 @@
 'use client'
-import React, { useState } from 'react'
-import { motion } from 'framer-motion' // fixed import
-import { DeleteIcon, Edit, Search, Trash2 } from 'lucide-react'
+import React, { useState, useEffect } from 'react'
+import { motion } from 'framer-motion'
+import { Edit, Search, Trash2, Loader2 } from 'lucide-react'
 
-function TableData({taskList, getEachTask}) {
-  const demiData = [
-    { id: 1, name: "Week 01", date: "July 21 Wed ", email: "midl@example.com", status:"completed" },
-    { id: 1, name: "Week 01", date: "July 21 Wed ", email: "midl@example.com", status:"pending" },
-    { id: 1, name: "Week 01", date: "July 21 Wed ", email: "midl@example.com", status:"completed" },
-    { id: 1, name: "Week 01", date: "July 21 Wed ", email: "midl@example.com", status:"completed" },
-    { id: 1, name: "Week 01", date: "July 21 Wed ", email: "midl@example.com", status:"pending" },
-
-  ]
-
+function TableData({ taskList, getEachTask, loading }) {
   const [searchQuery, setSearchQuery] = useState("")
 
+  // Simulate loading state until taskList arrives
+  // useEffect(() => {
+  //   if (taskList && taskList.length >= 0) {
+  //     // Small delay for smooth UX
+  //     const timer = setTimeout(() => setLoading(false), 1000)
+  //     return () => clearTimeout(timer)
+  //   }
+  // }, [taskList])
 
   return (
     <motion.div
@@ -39,88 +38,65 @@ function TableData({taskList, getEachTask}) {
         </div>
       </div>
 
-      <div className='overflow-x-none'>
-        <table className='min-w-full divide-y divide-gray-700'>
-          <thead>
-            <tr>
-              {["No", "Task", "Date", "Status", "Action"].map((item, index) => (
-                <th
+      {/* Loader */}
+      {loading ? (
+          <div className='flex flex-col justify-center items-center py-10 gap-2'>
+    <Loader2 className='animate-spin text-gray-300' size={36} />
+    <span className='text-gray-400 text-sm'>Loading...</span>
+  </div>
+      ) : (
+        <div className='overflow-x-none'>
+          <table className='min-w-full divide-y divide-gray-700'>
+            <thead>
+              <tr>
+                {["No", "Task", "Date", "Status", "Action"].map((item, index) => (
+                  <th
+                    key={index}
+                    className='px-3 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider hidden sm:table-cell'
+                  >
+                    {item}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody className='divide-y divide-gray-700'>
+              {taskList.map((item, index) => (
+                <motion.tr
                   key={index}
-                  className='px-3 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider hidden sm:table-cell'
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.1, duration: 0.3 }}
+                  className='hidden sm:table-row hover:bg-[#2b2b2b]'
                 >
-                  {item}
-                </th>
-
-
+                  <td className='px-3 sm:px-6 py-2 sm:py-3 text-white'>{index + 1}</td>
+                  <td className='px-3 sm:px-6 py-2 sm:py-3 text-white'>{item.taskName}</td>
+                  <td className='px-3 sm:px-6 py-2 sm:py-3 text-white'>{item.date}</td>
+                  <td className='px-3 sm:px-6 py-2 sm:py-3 text-white'>
+                    <button
+                      className={`text-sm px-3 py-1 rounded-md ${
+                        item.status ? "bg-green-700" : "bg-amber-700"
+                      }`}
+                    >
+                      {item.status ? "Complete" : "Pending"}
+                    </button>
+                  </td>
+                  <td className='px-3 sm:px-6 py-2 sm:py-3 text-white'>
+                    <button
+                      onClick={() => getEachTask(item)}
+                      className='text-sm bg-blue-700 hover:bg-blue-800 transition-colors duration-200 px-3 py-1 rounded-md'
+                    >
+                      Open
+                    </button>
+                    <button className='text-sm px-3 py-1 rounded-md'>
+                      <Trash2 size={18} />
+                    </button>
+                  </td>
+                </motion.tr>
               ))}
-            </tr>
-          </thead>
-          <tbody className='divide-y divide-gray-700'>
-
-            {taskList.map((item, index) => (
-              <motion.tr
-                key={index}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1, duration: 0.3 }}
-                className='flex flex-col sm:table-row mb-4 sm:mb-0 border-b sm:border-b-0 border-gray-700
-              sm:border-none p-2 sm:p-0'>
-
-                {/* mobile View */}
-
-                <td className='sm:hidden px-3 py-2'>
-                  <div className='flex items-center justify-between'>
-                    <div className='flex items-center'>
-                      <div className='ml-3'>
-                        <div className='text-sm font-medium text-gray-100'>{item.name}</div>
-                        <div className='text-sm font-medium text-gray-400'>{item.date}</div>
-                      </div>
-                    </div>
-                    <div className='flex space-x-1 -mt-5 -mr-5 '>
-                        <button className='text-sm   text-indigo-500 hover:text-indigo-300'><Edit size={16}/></button>
-                        <button className='text-sm  text-gray-500   hover:text-gray-300  px-3 py-1 rounded-md'><Trash2 size={16}/></button>
-
-                    </div>
-
-                  </div>
-                </td>
-
-                {/* ============== */}
-
-                {/* <td className='hidden sm:table-cell px-6 py-4 whitespace-now'></td> */}
-
-              </motion.tr>
-            ))}
-
-
-            {taskList.map((item, index) => (
-              <motion.tr
-                key={index}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1, duration: 0.3 }}
-                className='hidden  sm:table-row mb-4 sm:mb-0   border-b-0 border=gray-700 sm:border-none p-2 sm:p-0 hover:bg-[#2b2b2b]'>
-                <td className='px-3 sm:px-6 py-2 sm:py-3 text-white hidden sm:table-cell'>{index + 1}</td>
-                <td className='px-3 sm:px-6 py-2 sm:py-3 text-white hidden sm:table-cell'>{item.taskName}</td>
-                <td className='px-3 sm:px-6 py-2 sm:py-3 text-white hidden sm:table-cell'>{item.date}</td>
-                <td className='px-3 sm:px-6 py-2 sm:py-3  text-white hidden sm:table-cell  '>
-                  <div className='flex items-center'>
-                    <button className={`text-sm    px-3 py-1 rounded-md ${item.status ? "bg-green-700": "bg-amber-700"} `}>{item.status ? "Complete": "Pending"}</button>
-                  </div>
-                </td>
-                <td className='px-3 sm:px-6 py-2 sm:py-3  text-white hidden sm:table-cell  '>
-                  <div className='flex items-center'>
-                    <button onClick={()=>getEachTask(item)} className='text-sm cursor-pointer  bg-blue-700 hover:bg-blue-800 transition-colors duration-200 px-3 py-1 rounded-md'>Open</button>
-                    <button className='text-sm   px-3 py-1 rounded-md'><Trash2 size={18} className='' /></button>
-
-                  </div>
-                </td>
-
-              </motion.tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+            </tbody>
+          </table>
+        </div>
+      )}
     </motion.div>
   )
 }
