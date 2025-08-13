@@ -58,7 +58,7 @@ export default function List() {
 
   return (
     <div className='flex-1 overflow-hidden relative z-10'>
-      <main className='max-w-7xl mx-auto py-6 px-4 lg:py-8'>
+      {/* <main className='max-w-7xl mx-auto py-6 px-4 lg:py-8'>
         <motion.div
           className='grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 mb-4'
           initial={{ opacity: 0, y: 20 }}
@@ -70,12 +70,12 @@ export default function List() {
           <StateCart name='Upcoming Tasks' icon={CalendarFold} value='1' />
           <StateCart name='Pending' icon={ClockAlert} value='0' />
         </motion.div>
-      </main>
+      </main> */}
 
       <Link href='/task-schedule/generate-task'>
         <div className='grid grid-cols-1 lg:grid-cols-2 gap-8 overflow-hidden'>
           <motion.div
-            className='flex flex-col items-center mb-8 mt-1 h-40 w-40 justify-center  mx-10 cursor-pointer bg-[#1e1e1e] outline-1 outline-gray-600 transition-colors duration-300 hover:bg-[#2f2f2f] rounded-lg backdrop-blur-md shadow-lg'
+            className='flex flex-col items-center mb-8 mt-6 h-40 w-40 justify-center  mx-10 cursor-pointer bg-[#1e1e1e] outline-1 outline-gray-600 transition-colors duration-300 hover:bg-[#2f2f2f] rounded-lg backdrop-blur-md shadow-lg'
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1 }}

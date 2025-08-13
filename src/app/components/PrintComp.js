@@ -30,8 +30,10 @@ function PrintComp({ data }) {
                 ref={contentRef}
                 className="hidden print:block"
             >
+
+                
                 <table className="min-w-full border border-gray-700">
-                    <thead className="bg-gray-100">
+                    <thead className="bg-gray-900">
                         <tr>
                             {["No", "Task", "Assignment"].map((col, index) => (
                                 <th key={index} 
@@ -42,7 +44,7 @@ function PrintComp({ data }) {
                         </tr>
                     </thead>
                     <tbody>
-                        {cleaningData.cleaningList.map((task, index) => (
+                        {cleaningData.map((task, index) => (
                             <tr key={index}>
                                 <td className="px-4 py-2  text-gray-950 border border-gray-300">{index + 1}</td>
                                 <td className="px-4 py-2  text-gray-950 border border-gray-300">{task.place}</td>
@@ -52,19 +54,21 @@ function PrintComp({ data }) {
                             </tr>
                         ))}
                     </tbody>
+                    
                 </table>
             </div>
 
             {/* Buttons */}
-            <div className="flex gap-4 mt-4">
-                <button className="bg-blue-500 flex gap-2 items-center hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                    Report <ClipboardPen size={16} />
+           
+            <div className="flex gap-4 ">
+                <button className="bg-blue-500 flex gap-2 items-center hover:bg-blue-700 text-white font-bold  px-4 rounded">
+                     <ClipboardPen size={16} />
                 </button>
                 <button
                     onClick={handlePrint}
                     className="bg-red-500 flex gap-2 items-center hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
                 >
-                    Print <Printer size={16} />
+                     <Printer size={16} />
                 </button>
             </div>
         </div>
