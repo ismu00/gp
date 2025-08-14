@@ -14,6 +14,7 @@ import {
   ClockAlert,
   CalendarDays,
   Plus,
+  History,
 } from 'lucide-react'
 
 export default function List() {
@@ -58,6 +59,8 @@ export default function List() {
 
   return (
     <div className='flex-1 overflow-hidden relative z-10'>
+
+      
       {/* <main className='max-w-7xl mx-auto py-6 px-4 lg:py-8'>
         <motion.div
           className='grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 mb-4'
@@ -71,20 +74,38 @@ export default function List() {
           <StateCart name='Pending' icon={ClockAlert} value='0' />
         </motion.div>
       </main> */}
+ 
 
-      <Link href='/task-schedule/generate-task'>
-        <div className='grid grid-cols-1 lg:grid-cols-2 gap-8 overflow-hidden'>
+        <div className='flex overflow-hidden'>
+                <Link href='/task-schedule/generate-task'>
+
           <motion.div
+            className='flex flex-col items-center mb-8 mt-6 h-40 w-40 justify-center  ml-12 cursor-pointer bg-[#1e1e1e] outline-1 outline-gray-600 transition-colors duration-300 hover:bg-[#2f2f2f] rounded-lg backdrop-blur-md shadow-lg'
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1 }}
+            >
+            <Plus className='text-gray-100 mt-2' size={40} />
+            <h1 className='text-md font-medium text-gray-100 pt-2'>Create New</h1>
+          </motion.div>
+
+      </Link>
+
+            <motion.div
             className='flex flex-col items-center mb-8 mt-6 h-40 w-40 justify-center  mx-10 cursor-pointer bg-[#1e1e1e] outline-1 outline-gray-600 transition-colors duration-300 hover:bg-[#2f2f2f] rounded-lg backdrop-blur-md shadow-lg'
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1 }}
-          >
-            <Plus className='text-gray-100 mt-2' size={40} />
-            <h1 className='text-md font-medium text-gray-100 pt-2'>Create New</h1>
+            >
+            <History className='text-gray-100 mt-2' size={40} />
+            <h1 className='text-md font-medium text-gray-100 pt-2'>Use Existing</h1>
           </motion.div>
+
         </div>
-      </Link>
+
+        
+
+
 
       <hr className='mx-4 opacity-25' />
       <TableData taskList={taskList} getEachTask={getEachTask} loading={loading}/>

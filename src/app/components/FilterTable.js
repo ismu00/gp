@@ -1,20 +1,54 @@
 'use client'
 import { useState } from 'react'
 import PrintComp from '@/app/components/PrintComp'
+import ReportComp from './ReportComp'
 
 export default function FilterTable({ item }) {
-  const [filterMenu, setFilterMenu] = useState('MNC Ground Floor')
+  const [filterMenu, setFilterMenu] = useState('Masjid')
   const filterData = item.cleaningList.filter(area => area.category === filterMenu)
 
   return (
-    <div className="flex flex-col h-[calc(100vh-115px)] text-white p-4">
-      <div className='flex w-full justify-between  items-center gap-0.5 px-4'>
-    <div className='flex'>
-            {['Masjid', 'MNC Ground Floor', 'MNC First Floor', 'MNC Second Floor', 'MNC Outside'].map((i)=>(
-            <p className={` hover:bg-[#1e1e1e] py-2 transition-colors duration-300 ${filterMenu === i ? "bg-[#1e1e1e]" : "bg-[#2f2f2f]"}  px-6 cursor-pointer`} onClick={()=> setFilterMenu(i)}>{i}</p>
-        ))}
-    </div>
- <PrintComp data={filterData} />
+    <div className="flex flex-col h-[calc(100vh-115px)] text-white p-8">
+      <div className='flex w-full justify-between  items-center  px-4'>
+<div className="flex">
+  {[
+    { label: 'Masjid', active: true },
+    { label: 'MNC Ground Floor' },
+    { label: 'MNC First Floor' },
+    { label: 'MNC Second Floor' },
+    { label: 'MNC Outside' },
+  ].map((tab, idx, arr) => {
+    let clip;
+    if (idx === 0) {
+      // First tab: curve left, slope right
+      clip = 'polygon(0% 0%, 100% 0%, calc(100% - 12px) 100%, 0% 100%)';
+    } else if (idx === arr.length - 1) {
+      // Last tab: slope left, curve right
+      clip = 'polygon(12px 0%, 100% 0%, 100% 100%, 0% 100%)';
+    } else {
+      // Middle tabs: slope left and slope right
+      clip = 'polygon(12px 0%, 100% 0%, calc(100% - 12px) 100%, 0% 100%)';
+    }
+
+    return (
+      <div onClick={()=>setFilterMenu(tab.label)}
+        key={tab.label}
+        className={`flex items-center px-4 py-2 cursor-pointer transition-all duration-200
+          ${filterMenu === tab.label
+            ? 'bg-blue-600 text-white'
+            : 'bg-[#2e2e2e] text-gray-100 hover:bg-gray-800'
+          } ${idx === 0 ? 'rounded-tl-xl' : ''} ${idx === arr.length - 1 ? 'rounded-tr-xl' : ''} 
+          ${idx !== 0 ? '-ml-2' : ''}`}
+        style={{ clipPath: clip }}
+      >
+        <span>{tab.label}</span>
+      </div>
+    );
+  })}
+</div>
+
+<div className='flex'> <ReportComp data={filterData} filterMenu={filterMenu}/>
+ <PrintComp data={filterData} filterMenu={filterMenu}/></div>
       </div>
       <div className="flex-1  px-4">
         <div className="bg-[#1e1e1e]  shadow-md border border-[#1f1f1f] p-4">

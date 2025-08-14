@@ -4,7 +4,7 @@ import React, { useRef } from 'react'
 import { useReactToPrint } from 'react-to-print'
 import { ClipboardPen, Printer } from 'lucide-react'
 
-function PrintComp({ data, filterMenu }) {
+function ReportComp({ data, filterMenu }) {
     const contentRef = useRef()
 
     const handlePrint = useReactToPrint({
@@ -63,17 +63,17 @@ function PrintComp({ data, filterMenu }) {
 
             {/* Buttons */}
 
-            <div className="flex ">
-                
+            <div className="flex">
                 <button
-                    onClick={handlePrint}
-                    className="bg-red-500 flex items-center hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
-                >
-                    <Printer size={16} />
-                </button>
+                
+                                               onClick={handlePrint}
+                                               className="bg-red-500 flex items-center hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+                                           >
+                                               <ClipboardPen size={16} />
+                                           </button>
             </div>
         </div>
     )
 }
 
-export default PrintComp
+export default ReportComp
