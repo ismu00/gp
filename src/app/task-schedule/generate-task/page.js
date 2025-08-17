@@ -15,7 +15,22 @@ export default function GenerateTask() {
     const { taskList, setTaskList } = useData()
     const [cleaningList, setCleaningList] = useState([])
     const [leftover, setLeftOver] = useState()
-      const [isSubmitting, setIsSubmitting] = useState(false)
+    const [isSubmitting, setIsSubmitting] = useState(false)
+    
+    // Add shuffle order state
+    const [shuffleOrder, setShuffleOrder] = useState([null, null, null, null, null]);
+    
+    // Add category order state
+    const [categoryOrder, setCategoryOrder] = useState(['Masjid', 'MNC Ground Floor', 'MNC First Floor', 'MNC Second Floor', 'MNC Outside']);
+
+    // Get available class options for each dropdown
+    const getAvailableOptions = (currentIndex) => {
+        const usedClasses = shuffleOrder
+            .map((classNum, index) => index !== currentIndex ? classNum : null)
+            .filter(classNum => classNum !== null);
+        
+        return [1, 2, 3, 4, 5].filter(classNum => !usedClasses.includes(classNum));
+    };
     
 const navigation = useRouter()
 
@@ -116,7 +131,28 @@ useEffect(() => {
         return array.sort(() => Math.random() - 0.5);
     }
 
+    // Function to shuffle students based on shuffleOrder
+    function shuffleStudentsByOrder(students, shuffleOrder) {
+        // Group students by class
+        const classesByNumber = {};
+        students.forEach(student => {
+            const classNum = parseInt(student.className.match(/\d+/));
+            if (!classesByNumber[classNum]) {
+                classesByNumber[classNum] = [];
+            }
+            classesByNumber[classNum].push(student);
+        });
 
+        // Reorder based on shuffleOrder and flatten
+        const shuffledStudents = [];
+        shuffleOrder.forEach(classNum => {
+            if (classNum && classesByNumber[classNum]) {
+                shuffledStudents.push(...classesByNumber[classNum]);
+            }
+        });
+
+        return shuffledStudents;
+    }
 
     function generates() {
         setIsSubmitting(true)
@@ -155,11 +191,35 @@ useEffect(() => {
                 if (p.startsWith("room")) return 1;
                 return 2;
             };
+
+            // Get category priority based on categoryOrder state
+            const getCategoryPriority = (area) => {
+                if (!area.category) return 999; // Items without category go last
+                
+                const categoryIndex = categoryOrder.indexOf(area.category);
+                return categoryIndex === -1 ? 999 : categoryIndex; // Unknown categories go last
+            };
+
             const priorityA = getPriority(a.place);
             const priorityB = getPriority(b.place);
-            return priorityA !== priorityB
-                ? priorityA - priorityB
-                : a.place.localeCompare(b.place);
+            
+            // If different main priorities, sort by priority
+            if (priorityA !== priorityB) {
+                return priorityA - priorityB;
+            }
+            
+            // If both are general areas (priority 2), sort by category first
+            if (priorityA === 2 && priorityB === 2) {
+                const categoryA = getCategoryPriority(a);
+                const categoryB = getCategoryPriority(b);
+                
+                if (categoryA !== categoryB) {
+                    return categoryA - categoryB;
+                }
+            }
+            
+            // Within same priority and category, sort alphabetically
+            return a.place.localeCompare(b.place);
         });
 
         let remaining = [];
@@ -193,7 +253,9 @@ useEffect(() => {
                 assigned = assignFromRoom(roomKey);
             } else {
                 if (remaining.length === 0) {
-                    remaining = Object.values(classMap).flat();
+                    // Shuffle students based on shuffleOrder before flattening
+                    const shuffledStudents = shuffleStudentsByOrder(studentsNames, shuffleOrder);
+                    remaining = shuffledStudents;
                 }
                 const pool = remaining.filter(s => !assignedSet.has(s.name));
                 assigned = pool.slice(0, area.noPerson);
@@ -263,7 +325,15 @@ useEffect(() => {
         }
     };
 
+    // Function to change category order (you can call this from UI if needed)
+    const updateCategoryOrder = (newOrder) => {
+        setCategoryOrder(newOrder);
+    };
 
+    // Function to change shuffle order (you can call this from UI if needed)
+    const updateShuffleOrder = (newOrder) => {
+        setShuffleOrder(newOrder);
+    };
 
     return (
         <div className="flex-1 relative">
@@ -278,31 +348,131 @@ useEffect(() => {
                     >
                         <h1 className="flex justify-center gap-1 text-center text-lg font-bold  py-6 w-full"><ClipboardList /> New Task</h1>
                         <div className="bg-[#2e2e2e] mb-2 py-2 text-center rounded-lg ">
-                            <p>Choose Levels for Task </p>
+                            <p>Select Class Preference</p>
                         </div>
                         <div className=" flex justify-between px-8 py-3  border-b-1 border-gray-700 ">
-                            <label className="text-gray-400" htmlFor="">1. Level 1</label>
-                            <input className="text-2xl w-5 h-5" type="checkbox" name="" id="" />
+                            <label className="text-gray-400" htmlFor="">1. MNC Ground Floor</label>
+                            <select 
+                                className="bg-gray-700 text-white rounded px-2 py-1"
+                                value={shuffleOrder[0] || ""}
+                                onChange={(e) => {
+                                    const newOrder = [...shuffleOrder];
+                                    newOrder[0] = e.target.value ? parseInt(e.target.value) : null;
+                                    setShuffleOrder(newOrder);
+                                }}
+                            >
+                                <option value="">Select Class</option>
+                                {getAvailableOptions(0).map(classNum => (
+                                    <option key={classNum} value={classNum}>Class {classNum}</option>
+                                ))}
+                                {shuffleOrder[0] && !getAvailableOptions(0).includes(shuffleOrder[0]) && (
+                                    <option key={shuffleOrder[0]} value={shuffleOrder[0]}>Class {shuffleOrder[0]}</option>
+                                )}
+                            </select>
                         </div>
                         <div className=" flex justify-between px-8 py-3  border-b-1 border-gray-700 ">
-                            <label className="text-gray-400" htmlFor="">2. Level 2</label>
-                            <input className="text-2xl w-5 h-5" type="checkbox" name="" id="" />
+                            <label className="text-gray-400" htmlFor="">2. MNC First Floor</label>
+                            <select 
+                                className="bg-gray-700 text-white rounded px-2 py-1"
+                                value={shuffleOrder[1] || ""}
+                                onChange={(e) => {
+                                    const newOrder = [...shuffleOrder];
+                                    newOrder[1] = e.target.value ? parseInt(e.target.value) : null;
+                                    setShuffleOrder(newOrder);
+                                }}
+                            >
+                                <option value="">Select Class</option>
+                                {getAvailableOptions(1).map(classNum => (
+                                    <option key={classNum} value={classNum}>Class {classNum}</option>
+                                ))}
+                                {shuffleOrder[1] && !getAvailableOptions(1).includes(shuffleOrder[1]) && (
+                                    <option key={shuffleOrder[1]} value={shuffleOrder[1]}>Class {shuffleOrder[1]}</option>
+                                )}
+                            </select>
                         </div>
                         <div className=" flex justify-between px-8 py-3  border-b-1 border-gray-700 ">
-                            <label className="text-gray-400" htmlFor="">3. Level 3</label>
-                            <input className="text-2xl w-5 h-5" type="checkbox" name="" id="" />
+                            <label className="text-gray-400" htmlFor="">3. MNC Second Floor</label>
+                            <select 
+                                className="bg-gray-700 text-white rounded px-2 py-1"
+                                value={shuffleOrder[2] || ""}
+                                onChange={(e) => {
+                                    const newOrder = [...shuffleOrder];
+                                    newOrder[2] = e.target.value ? parseInt(e.target.value) : null;
+                                    setShuffleOrder(newOrder);
+                                }}
+                            >
+                                <option value="">Select Class</option>
+                                {getAvailableOptions(2).map(classNum => (
+                                    <option key={classNum} value={classNum}>Class {classNum}</option>
+                                ))}
+                                {shuffleOrder[2] && !getAvailableOptions(2).includes(shuffleOrder[2]) && (
+                                    <option key={shuffleOrder[2]} value={shuffleOrder[2]}>Class {shuffleOrder[2]}</option>
+                                )}
+                            </select>
                         </div>
                         <div className=" flex justify-between px-8 py-3  border-b-1 border-gray-700 ">
-                            <label className="text-gray-400" htmlFor="">4. Level 4</label>
-                            <input className="text-2xl w-5 h-5" type="checkbox" name="" id="" />
+                            <label className="text-gray-400" htmlFor="">4. MNC Outside</label>
+                            <select 
+                                className="bg-gray-700 text-white rounded px-2 py-1"
+                                value={shuffleOrder[3] || ""}
+                                onChange={(e) => {
+                                    const newOrder = [...shuffleOrder];
+                                    newOrder[3] = e.target.value ? parseInt(e.target.value) : null;
+                                    setShuffleOrder(newOrder);
+                                }}
+                            >
+                                <option value="">Select Class</option>
+                                {getAvailableOptions(3).map(classNum => (
+                                    <option key={classNum} value={classNum}>Class {classNum}</option>
+                                ))}
+                                {shuffleOrder[3] && !getAvailableOptions(3).includes(shuffleOrder[3]) && (
+                                    <option key={shuffleOrder[3]} value={shuffleOrder[3]}>Class {shuffleOrder[3]}</option>
+                                )}
+                            </select>
                         </div>
                         <div className=" flex justify-between px-8 py-3  border-b-1 border-gray-700 ">
-                            <label className="text-gray-400" htmlFor="">5. Level 5</label>
-                            <input className="text-2xl w-5 h-5" type="checkbox" name="" id="" />
+                            <label className="text-gray-400" htmlFor="">5. Masjid</label>
+                            <select 
+                                className="bg-gray-700 text-white rounded px-2 py-1"
+                                value={shuffleOrder[4] || ""}
+                                onChange={(e) => {
+                                    const newOrder = [...shuffleOrder];
+                                    newOrder[4] = e.target.value ? parseInt(e.target.value) : null;
+                                    setShuffleOrder(newOrder);
+                                }}
+                            >
+                                <option value="">Select Class</option>
+                                {getAvailableOptions(4).map(classNum => (
+                                    <option key={classNum} value={classNum}>Class {classNum}</option>
+                                ))}
+                                {shuffleOrder[4] && !getAvailableOptions(4).includes(shuffleOrder[4]) && (
+                                    <option key={shuffleOrder[4]} value={shuffleOrder[4]}>Class {shuffleOrder[4]}</option>
+                                )}
+                            </select>
                         </div>
                         <div className="w-full px-6 py-4 mt-2">
-
-                            <button onClick={() => setNext(!next)} className="font-bold w-full py-2 px-8 bg-green-800 rounded-lg cursor-pointer hover:bg-green-700 transition-colors">Next</button>
+                            <button 
+                                onClick={() => {
+                                    // Update categoryOrder based on the selected shuffle order
+                                    const newCategoryOrder = [];
+                                    if (shuffleOrder[0]) newCategoryOrder.push('MNC Ground Floor');
+                                    if (shuffleOrder[1]) newCategoryOrder.push('MNC First Floor');
+                                    if (shuffleOrder[2]) newCategoryOrder.push('MNC Second Floor');
+                                    if (shuffleOrder[3]) newCategoryOrder.push('MNC Outside');
+                                    if (shuffleOrder[4]) newCategoryOrder.push('Masjid');
+                                    
+                                    setCategoryOrder(newCategoryOrder);
+                                    setNext(!next);
+                                }} 
+                                disabled={shuffleOrder.includes(null)}
+                                className={`font-bold w-full py-2 px-8 rounded-lg transition-colors ${
+                                    shuffleOrder.includes(null) 
+                                        ? 'bg-gray-600 cursor-not-allowed text-gray-400' 
+                                        : 'bg-green-800 hover:bg-green-700 cursor-pointer text-white'
+                                }`}
+                            >
+                                {shuffleOrder.includes(null) ? 'Select All Classes' : 'Next'}
+                            </button>
                         </div>
                     </motion.div>
 
@@ -339,15 +509,23 @@ useEffect(() => {
                         </div>
 
                         <div className="gap-2 items-center px-4 pt-3 border-gray-700">
-                            <label className="text-sm w-20 text-gray-300">Discription:</label>
+                            <label className="text-sm w-20 text-gray-300">Description:</label>
                             <textarea
                                 placeholder=""
                                 className="w-full h-26 px-3 py-2  text-gray-100  border border-gray-300 rounded-lg resize-none focus:outline-none focus:ring-2 "
                             />  </div>
 
+                        {/* Debug section - you can remove this in production */}
+                        {/* <div className="gap-2 items-center px-4 pt-2 border-gray-700">
+                            <div className="text-xs text-gray-500">
+                                <p>Current Category Order: {categoryOrder.join(' → ')}</p>
+                                <p>Current Shuffle Order: [{shuffleOrder.join(', ')}]</p>
+                            </div>
+                        </div> */}
+
                         {/* BUTTONS */}
                         <div className="mt-auto flex items-center justify-between px-6 pb-4 gap-2">
-                            <div onClick={() => console.log("cleaningList", cleaningList)} className="flex gap-1 cursor-pointer">
+                            <div onClick={() => setNext(!next)} className="flex gap-1 cursor-pointer">
                                 <MoveLeft className="text-gray-400" />
                                 <button className="flex font-extralight text-gray-400 cursor-pointer">Back</button>
                             </div>
@@ -358,13 +536,11 @@ useEffect(() => {
                                         // delay to ensure state update
                                     }}
 
-                                                  disabled={isSubmitting}
+                                    disabled={isSubmitting}
 
-                                    className={`font-bold py-2 px-8 ${isSubmitting?"bg-grey-400  hover:bg-grey-400":"bg-green-800 hover:bg-green-700" }  transition-colors duration-300 rounded-lg cursor-pointer`}
+                                    className={`font-bold py-2 px-8 ${isSubmitting?"bg-gray-400  hover:bg-gray-400":"bg-green-800 hover:bg-green-700" }  transition-colors duration-300 rounded-lg cursor-pointer`}
                                 >
-                                                  {isSubmitting ? "Generating..." : "Generate"}
-
-                                    
+                                    {isSubmitting ? "Generating..." : "Generate"}
                                 </button>
 
                             </div>
@@ -375,4 +551,4 @@ useEffect(() => {
             </main>
         </div>
     )
-} 
+}
