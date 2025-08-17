@@ -5,17 +5,13 @@ import { motion } from 'motion/react'
 import { useData } from '@/app/context/DataContext'
 import Swal from 'sweetalert2'
 import 'sweetalert2/dist/sweetalert2.min.css'
-import { Loader2 } from 'lucide-react' // add this import at top
-
+import { Loader2 } from 'lucide-react'
 
 const Class = [
   'All Areas', 'Masjid', 'MNC Ground Floor', 'MNC First Floor', 'MNC Second Floor', 'MNC Outside'
 ]
 
-
-
 function Page() {
-
   const { areaData, setAreaData } = useData()
   const [searchQuery, setSearchQuery] = useState("");
   const [fillterMenu, setfillterMenu] = useState('All Areas');
@@ -24,19 +20,90 @@ function Page() {
   const [studentClass, setStudentClass] = useState('Masjid');
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [loading, setLoading] = useState(true)
+  
+  // Edit state
+  const [editMode, setEditMode] = useState(false);
+  const [editingItem, setEditingItem] = useState(null);
+  const [editFormData, setEditFormData] = useState({
+    place: '',
+    noPerson: '',
+    category: ''
+  });
 
   const handleToggleAddStudent = () => {
     setAddArea(!addArea);
   }
+
   const handleAddInput = () => {
     setaddExtraArea([...addExtraArea, { place: "", noPerson: "" }])
   }
+
   const handleInputChange = (input, index) => {
     const { name, value } = input.target;
     const list = [...addExtraArea];
     list[index][name] = value;
     setaddExtraArea(list);
+  }
 
+  // Edit handlers
+  const handleEditClick = (item) => {
+    setEditingItem(item);
+    setEditFormData({
+      place: item.place,
+      noPerson: item.noPerson,
+      category: item.category
+    });
+    setEditMode(true);
+  }
+
+  const handleEditInputChange = (e) => {
+    const { name, value } = e.target;
+    setEditFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  }
+
+  const handleEditSubmit = async () => {
+    if (!editFormData.place || !editFormData.noPerson || !editFormData.category) {
+      alert("Please fill all fields!");
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      const res = await fetch(`/api/areas/${editingItem._id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(editFormData),
+      });
+
+      const result = await res.json();
+      if (result.success) {
+        alert("Area updated successfully!");
+        setEditMode(false);
+        setEditingItem(null);
+        setEditFormData({ place: '', noPerson: '', category: '' });
+        fetchAreas();
+      } else {
+        console.error(result.error);
+        alert("Something went wrong");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Failed to update");
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+
+  const handleEditCancel = () => {
+    setEditMode(false);
+    setEditingItem(null);
+    setEditFormData({ place: '', noPerson: '', category: '' });
   }
 
   useEffect(() => {
@@ -49,7 +116,7 @@ function Page() {
     if (!areaData || areaData.length === 0) {
       const fetchAreas = async () => {
         try {
-          setLoading(true); // stop loading once request is done
+          setLoading(true);
           const res = await fetch('/api/areas');
           const json = await res.json();
           if (json.success) {
@@ -60,13 +127,12 @@ function Page() {
         } catch (error) {
           console.error('Areas fetch failed:', error);
         } finally {
-          setLoading(false); // stop loading once request is done
+          setLoading(false);
         }
       };
       fetchAreas();
     }
   }, []);
-
 
   const fetchAreas = async () => {
     try {
@@ -82,16 +148,14 @@ function Page() {
       console.error('Areas fetch failed:', error);
     } finally {
       setLoading(false)
-
     }
   };
-
 
 
   const handleSubmit = async () => {
     if (!studentClass) return alert("Please select an Area!");
 
-    setIsSubmitting(true); // Disable button + change text
+    setIsSubmitting(true);
 
     const dataToSend = addExtraArea.map((s) => ({
       place: s.place,
@@ -122,7 +186,7 @@ function Page() {
       console.error(err);
       alert("Failed to submit");
     } finally {
-      setIsSubmitting(false); // Re-enable button
+      setIsSubmitting(false);
     }
   };
 
@@ -185,11 +249,13 @@ const handleDeletes = (id) => {
 
 
   return (
-    <div >
-      <div className={`${addArea ? 'blur-sm' : ''} mx-4  `}>
+    <div>
+      <div className={`${addArea || editMode ? 'blur-sm' : ''} mx-4`}>
         <div className='mx-8 my-8 flex justify-end'>
           <div onClick={handleToggleAddStudent}>
-            <button className={`bg-[#1f1f1f] hover:bg-[#2d2d2d] text-sm py-3 font-semibold rounded-md cursor-pointer px-6`}><Plus size={18} strokeWidth={3} className='inline' /> <span className='pt-1'>Add Area</span></button>
+            <button className={`bg-[#1f1f1f] hover:bg-[#2d2d2d] text-sm py-3 font-semibold rounded-md cursor-pointer px-6`}>
+              <Plus size={18} strokeWidth={3} className='inline' /> <span className='pt-1'>Add Area</span>
+            </button>
           </div>
         </div>
         <div>
@@ -202,7 +268,6 @@ const handleDeletes = (id) => {
                   )}
                 </select>
                 <p className='text-sm font-extralight  mt-2 text-gray-300   text-right '>Showing <span className='font-semibold'>{filterData?.length} </span>Areas</p>
-
               </div>
               <div className='relative w-full sm:w-auto'>
                 <input
@@ -249,51 +314,53 @@ const handleDeletes = (id) => {
                           <h1>{item.noPerson}</h1>
                         </div>
                         <div className='flex items-center gap-2 w-10'>
-                          <Edit size={16} className='cursor-pointer hover:text-blue-300' />
-                          <Trash onClick={() => handleDeletes(item._id)} size={16} className='cursor-pointer hover:text-red-300 transition-colors duration-300' />
+                          <Edit 
+                            size={16} 
+                            className='cursor-pointer hover:text-blue-300' 
+                            onClick={() => handleEditClick(item)}
+                          />
+                          <Trash 
+                            onClick={() => handleDeletes(item._id)} 
+                            size={16} 
+                            className='cursor-pointer hover:text-red-300 transition-colors duration-300' 
+                          />
                         </div>
                       </div>
                     </div>
                   ))}
                 </motion.div>
               )}
-
-
             </div>
           </div>
-
         </div>
       </div>
-      {addArea &&
 
-        <div className="fixed top-50 right-0 left-0  flex items-center justify-center ">
-          <div className="bg-[#1e1e1e]  p-6 rounded-lg shadow-lg w-100 ">
-            <div className='flex  justify-between'>
-              <p className='flex text-xl font-semibold mt-4 gap-2'> <Users />   Add Area</p>
+      {/* Add Area Modal */}
+      {addArea && (
+        <div className="fixed top-50 right-0 left-0 flex items-center justify-center">
+          <div className="bg-[#1e1e1e] p-6 rounded-lg shadow-lg w-100">
+            <div className='flex justify-between'>
+              <p className='flex text-xl font-semibold mt-4 gap-2'><Users /> Add Area</p>
               <CircleX className='mt-4 cursor-pointer' onClick={() => {
                 setAddArea(!addArea), setaddExtraArea([{ place: "", noPerson: '' }])
                 fetchAreas();
               }} />
             </div>
-            <div className='mt-6'><label className='w-full'>Level</label>
+            <div className='mt-6'>
+              <label className='w-full'>Level</label>
               <select
                 value={studentClass}
                 onChange={(e) => setStudentClass(e.target.value)}
                 className="w-full border px-3 py-2 mb-4 rounded text-gray-50 bg-[#2e2e2e]">
-
                 {Class.map((cls, index) =>
                   cls === 'All Areas' ? null : <option key={index} value={cls}>{cls}</option>
                 )}
-              </select></div>
+              </select>
+            </div>
             <div className='max-h-60 overflow-auto'>
-              {/* Adding Extra student inputs */}
-
               {addExtraArea.map((item, index) =>
-                <div className='grid grid-cols-11 items-center overflow-auto ' key={index}>
-
-                  <div className='col-span-1 mr-0'>
-                    {index + 1}
-                  </div>
+                <div className='grid grid-cols-11 items-center overflow-auto' key={index}>
+                  <div className='col-span-1 mr-0'>{index + 1}</div>
                   <div className='col-span-7 mr-1'>
                     <input
                       type='text'
@@ -307,22 +374,18 @@ const handleDeletes = (id) => {
                     <input
                       type='number'
                       name='noPerson'
-                      placeholder='Quota '
+                      placeholder='Quota'
                       value={item.noPerson}
                       onChange={(e) => handleInputChange(e, index)}
-                      className='w-full  border px-3 py-2  rounded' />
-
+                      className='w-full border px-3 py-2 rounded' />
                   </div>
                 </div>
-
               )}
             </div>
-            <button onClick={() => handleAddInput()} className="flex  w-full justify-end items-center my-2" >
+            <button onClick={() => handleAddInput()} className="flex w-full justify-end items-center my-2">
               <Plus className="w-4 h-4 mx-1" />
               <span>Add</span>
-
             </button>
-
             <button
               onClick={handleSubmit}
               disabled={isSubmitting}
@@ -330,12 +393,74 @@ const handleDeletes = (id) => {
             >
               {isSubmitting ? "Adding..." : "Add Areas"}
             </button>
-
-
-
           </div>
         </div>
-      }
+      )}
+
+      {/* Edit Area Modal */}
+      {editMode && (
+        <div className="fixed top-50 right-0 left-0 flex items-center justify-center">
+          <div className="bg-[#1e1e1e] p-6 rounded-lg shadow-lg w-100">
+            <div className='flex justify-between'>
+              <p className='flex text-xl font-semibold mt-4 gap-2'><Edit /> Edit Area</p>
+              <CircleX className='mt-4 cursor-pointer' onClick={handleEditCancel} />
+            </div>
+            
+            <div className='mt-6'>
+              <label className='w-full block mb-2'>Area Name</label>
+              <input
+                type='text'
+                name='place'
+                value={editFormData.place}
+                onChange={handleEditInputChange}
+                placeholder='Area name'
+                className='w-full border px-3 py-2 mb-4 rounded text-gray-50 bg-[#2e2e2e]'
+              />
+            </div>
+
+            <div className='mb-4'>
+              <label className='w-full block mb-2'>Number of Persons</label>
+              <input
+                type='number'
+                name='noPerson'
+                value={editFormData.noPerson}
+                onChange={handleEditInputChange}
+                placeholder='Quota'
+                className='w-full border px-3 py-2 rounded text-gray-50 bg-[#2e2e2e]'
+              />
+            </div>
+
+            <div className='mb-6'>
+              <label className='w-full block mb-2'>Category</label>
+              <select
+                name='category'
+                value={editFormData.category}
+                onChange={handleEditInputChange}
+                className="w-full border px-3 py-2 rounded text-gray-50 bg-[#2e2e2e]">
+                {Class.map((cls, index) =>
+                  cls === 'All Areas' ? null : <option key={index} value={cls}>{cls}</option>
+                )}
+              </select>
+            </div>
+
+            <div className='flex gap-3'>
+              <button
+                onClick={handleEditCancel}
+                className="bg-gray-600 hover:bg-gray-700 w-full py-2 rounded text-white cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleEditSubmit}
+                disabled={isSubmitting}
+                className={`bg-blue-600 hover:bg-blue-700 w-full py-2 rounded text-white cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed`}
+              >
+                {isSubmitting ? "Updating..." : "Update Area"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
