@@ -10,8 +10,13 @@ import {
 } from 'lucide-react'
 import TasksOverview from '@/app/components/TasksOverview'
 import CategoryDistributionChart from '@/app/components/categoryDistriutionChart'
+import { useData } from '../context/DataContext'
 
 export default function Overview() {
+
+const {taskList} = useData()
+// taskLenght = taskList.lenght
+
   return (
     <div className='flex-1 overflow-auto relative z-10'>
       <main className='max-w-7xl mx-auto py-6 px-4 lg:py-8'>
@@ -21,7 +26,7 @@ export default function Overview() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1 }}
         >
-          <StateCart name='Total Tasks' icon={BrushCleaning} value='20' />
+          <StateCart name='Total Tasks' icon={BrushCleaning} value={taskList.length} />
           <StateCart name='Weekly Tasks' icon={CalendarDays} value='2' />
           <StateCart name='Upcoming Tasks' icon={CalendarFold} value='1' />
           <StateCart name='Pending' icon={ClockAlert} value='0' />

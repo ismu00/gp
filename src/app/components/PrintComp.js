@@ -11,6 +11,10 @@ function PrintComp({ data, filterMenu }) {
         contentRef, // ✅ v3+ API
     })
 
+
+    const category = ["Masjid", "MNC Ground Floor", "MNC First Floor", "MNC Second Floor", "MNC Outside"]
+
+
     const sampleData = {
         cleaningList: [
             { place: "Kitchen", cleaner: ["John", "Mary"] },
@@ -24,50 +28,93 @@ function PrintComp({ data, filterMenu }) {
     const cleaningData = data || sampleData
 
     return (
-        <div className="px-8  text-gray-950">
+        <div className=" text-gray-950">
             {/* Hidden on screen but visible in print */}
             <div
                 ref={contentRef}
                 className="hidden print:block"
-            ><div className='flex items-center gap-5 mt- p-6'>
+            >
 
 
-                    <div className='text-black'>Green Sphere</div>
-                    <div className='bg-gray-950 flex-1 h-1'></div>
-                </div>
-                <div className="flex flex-col w-full items-center justify-center pb-4">
-                    <p className="px-6 font-bold text-xl rounded-full py-2 bg-black text-gray-50 flex items-center justify-center">
-                        {filterMenu}  </p>
-                        <p className='text-black mt-2'>Superviser: Ahmed Yaseen</p>
-                </div>
+                {category.map((cat, index) => (
+                    <div
+                        key={index}
+                        className={`${index !== 0 ? "print:break-before-page" : ""} "px-8"`} // 🚀 force new page for each category except first
+                    >
+
+                        <div className='flex items-center gap-5 mt- p-6'>
 
 
-                <div className="min-w-full  border-gray-700">
-                  
-                    <div className='px-12'>
-                        {cleaningData.map((task, index) => (
-                            <tr className='p-8' key={index}>
-                                <td className="px-4 py-2 text-left text-gray-950 ">{index + 1}.</td>
-                                <td className="px-4 py-2 w-40 font-semibold  text-gray-950 ">{task.place}</td>
-                                <td className="px-4 py-2  text-gray-950 ">:</td>
-                                <td className="px-4 py-2 text-gray-950 ">
-                                    {task.cleaner.join(', ')}
-                                    
-                                </td>
-                            </tr>
-                        ))}
+                        </div>
+                        <div className="flex flex-col w-full items-center justify-center pb-4">
+                            <p className="px-8 font-black text-3xl rounded-full py-2 bg-black text-gray-50 flex items-center justify-center">
+                                {cat}
+                            </p>
+                            <p className='text-black mt-2'>Superviser: Ahmed Yaseen</p>
+                        </div>
+
+                        <div className="min-w-full border-gray-700">
+                            <div className='px-12'>
+                                <thead>
+                                    <tr>
+                                        {["No", "Place", "", "Cleaning Crew"].map((item, index) => (
+                                            <th
+                                                key={index}
+                                                className='px-3 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider hidden sm:table-cell'
+                                            >
+                                                {item}
+                                            </th>
+                                        ))}
+                                    </tr>
+                                </thead>
+
+                                {cleaningData.filter(area => area.category === cat).map((task, index) => (
+                                    <tr className='p-8' key={index}>
+                                        <td className="px-2 py-2 text-left text-gray-950 ">{index + 1}.</td>
+                                        <td className="py-2 w-50  font-semibold text-gray-950 ">{task.place}</td>
+                                        <td className=" py-2 text-gray-950 ">:</td>
+                                        
+                                        <td className="px-4 py-2 text-gray-950 ">
+                                            {task.cleaner.map((i, idx) => (
+                                                <div className='flex gap-2' key={idx}>
+                                                    <p>{i}</p>
+                                                </div>
+                                            ))}
+                                        </td>
+                                        <td className="px-4 py-2 text-gray-950 ">
+                                            {(task.place === "Bathroom" || task.place === "Toilet") && (
+                                                <>
+                                                    {task.cleaner.map((i, idx) => {
+                                                        let bath = idx + 1
+                                                        return (
+                                                            <div key={idx}>
+                                                                {"["+ bath + "]"}
+                                                            </div>
+                                                        )
+                                                    })}
+                                                </>
+                                            )}
+
+                                        </td>
+                                    </tr>
+                                ))}
+                            </div>
+                        </div>
                     </div>
+                ))}
 
-                </div>
+
+
+
             </div>
 
             {/* Buttons */}
 
-            <div className="flex ">
-                
+            <div className="flex">
                 <button
+
                     onClick={handlePrint}
-                    className="bg-red-500 flex items-center hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+                    className="bg-blue-600 flex items-center hover:bg-blue-700 text-white font-bold py-2 px-4 ml-2     rounded"
                 >
                     <Printer size={16} />
                 </button>

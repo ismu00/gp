@@ -27,6 +27,7 @@ function Page() {
     }
     const handleAddInput = () => {
         setaddExtraArea([...addExtraArea, { place: "", noPerson: "" }])
+        setaddExtraArea([...addExtraArea, { place: "", noPerson: "" }])
     }
     const handleInputChange = (input, index) => {
         const { name, value } = input.target;
@@ -181,7 +182,7 @@ function Page() {
             <div className={`${addArea ? 'blur-sm' : ''} mx-4  `}>
                 <div className='mx-8 my-8 flex justify-end'>
                     <div onClick={handleToggleAddStudent}>
-                        <button className={`bg-[#1f1f1f] hover:bg-[#2d2d2d] text-sm py-3 font-semibold rounded-md cursor-pointer px-6`}><Plus size={18} strokeWidth={3} className='inline' /> <span className='pt-1'>Add Area</span></button>
+                        <button className={`bg-[#1f1f1f] hover:bg-[#2d2d2d] text-sm py-3 font-semibold rounded-md cursor-pointer px-6`}><Plus size={18} strokeWidth={3} className='inline' /> <span className='pt-1'>Add New</span></button>
                     </div>
                 </div>
                 <div>
@@ -241,7 +242,7 @@ function Page() {
                 <div className="fixed top-50 right-0 left-0  flex items-center justify-center ">
                     <div className="bg-[#1e1e1e]  p-6 rounded-lg shadow-lg w-100 ">
                         <div className='flex  justify-between'>
-                            <p className='flex text-xl font-semibold mt-4 gap-2'> <Users />   Add Area</p>
+                            <p className='flex text-xl font-semibold mt-4 gap-2'> <Users />   Add Permanent Area</p>
                             <CircleX className='mt-4 cursor-pointer' onClick={() => {
                                 setAddArea(!addArea), setaddExtraArea([{ place: "", noPerson: '' }])
                                 fetchAreas();

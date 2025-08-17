@@ -86,26 +86,6 @@ function Page() {
     }
   };
 
-  const handleDelete = async (id) => {
-
-    try {
-      const res = await fetch(`/api/areas/${id}`, {
-        method: 'DELETE',
-      });
-
-      const data = await res.json();
-
-      if (res.ok) {
-        alert("Deleted successfully!");
-        // Optionally update UI state, like removing the item from list
-      } else {
-        alert(`Delete failed: ${data.message}`);
-      }
-    } catch (err) {
-      alert("Something went wrong while deleting.");
-      console.error(err);
-    }
-  };
 
 
   const handleSubmit = async () => {
@@ -162,34 +142,47 @@ function Page() {
   //     return matchesCategory && matchesSearch;
   // });
 
+const handleDelete = async (id) => {
+  try {
+    const res = await fetch(`/api/areas/${id}`, { method: 'DELETE' });
+    const data = await res.json();
 
-
-  const handleDeletes = () => {
-    Swal.fire({
-      title: 'Are you sure to Delete?',
-      text: 'Once deleted, you will not be able to recover this file!',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: 'Yes, delete it!',
-      cancelButtonText: 'Cancel',
-      background: '#dc2626', // Tailwind's red-600 hex value
-      color: '#fff',          // Make text white for contrast
-
-      customClass: {
-        popup: 'rounded-lg p-2 bg-red-200',
-        title: 'text-lg font-semibold text-red-100',
-        htmlContainer: 'text-sm text-gray-700',
-        confirmButton: 'bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded',
-        cancelButton: 'bg-gray-300 hover:bg-gray-400 text-black font-medium py-2 px-4 rounded ml-2',
-      },
-    }).then((result) => {
-      if (result.isConfirmed) {
-        Swal.fire('Deleted!', 'Your file has been deleted.', 'success')
-      } else {
-        Swal.fire('Cancelled', 'Your file is safe 🙂', 'info')
-      }
-    })
+    if (res.ok) {
+      setAreaData(prev => prev.filter(area => area._id !== id)); // update local state
+    } else {
+      Swal.fire("Failed!", data.message || "Delete failed", "error");
+    }
+  } catch (err) {
+    Swal.fire("Error!", "Something went wrong while deleting.", "error");
+    console.error(err);
   }
+};
+
+const handleDeletes = (id) => {
+  Swal.fire({
+    title: 'Are you sure to Delete?',
+    text: '',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Yes, delete it!',
+    cancelButtonText: 'Cancel',
+    background: '#fff',
+    color: '#000',
+    customClass: {
+      popup: 'rounded-lg p-2 bg-red-200',
+      title: 'text-lg font-semibold text-red-100',
+      htmlContainer: 'text-sm text-gray-700',
+      confirmButton: 'bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded',
+      cancelButton: 'bg-gray-300 hover:bg-gray-400 text-black font-medium py-2 px-4 rounded ml-2',
+    },
+  }).then((result) => {
+    if (result.isConfirmed) {
+      handleDelete(id);
+      Swal.fire('Deleted!', 'Your file has been deleted.', 'success');
+    }
+  });
+};
+
 
   return (
     <div >

@@ -5,7 +5,7 @@ import { NextResponse } from 'next/server';
 
 
 export async function DELETE(request, { params }) {
-  const id = params.id;
+  const id = await params.id;
 
   try {
     await mongoose.connect(connectionStr2);

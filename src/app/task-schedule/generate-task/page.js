@@ -2,6 +2,7 @@
 import { useData } from "@/app/context/DataContext";
 import { MoveLeft, ClipboardList } from "lucide-react";
 import { motion } from 'motion/react'
+import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 
 export default function GenerateTask() {
@@ -14,7 +15,9 @@ export default function GenerateTask() {
     const { taskList, setTaskList } = useData()
     const [cleaningList, setCleaningList] = useState([])
     const [leftover, setLeftOver] = useState()
-
+      const [isSubmitting, setIsSubmitting] = useState(false)
+    
+const navigation = useRouter()
 
     useEffect(() => {
   const fetchAllData = async () => {
@@ -85,6 +88,7 @@ export default function GenerateTask() {
     useEffect(() => {
         if (cleaningList.length > 0) {
             saveTaskToDB();
+
         }
     }, [cleaningList]);
 
@@ -115,6 +119,7 @@ useEffect(() => {
 
 
     function generates() {
+        setIsSubmitting(true)
         const assignedSet = new Set();
 
         const classMap = [...new Set(studentsNames.map(s => s.className))]
@@ -243,12 +248,18 @@ useEffect(() => {
 
             if (res.ok) {
                 alert("Task saved to database!");
+
+
             } else {
                 alert(`Failed to save: ${result.error}`);
             }
         } catch (err) {
             console.error("Save error:", err);
             alert("An error occurred while saving.");
+        }finally{
+                    setIsSubmitting(false)
+                    navigation.push("/task-schedule")
+
         }
     };
 
@@ -346,9 +357,14 @@ useEffect(() => {
                                         generates();
                                         // delay to ensure state update
                                     }}
-                                    className="font-bold py-2 px-8 bg-green-800 hover:bg-green-700 transition-colors duration-300 rounded-lg cursor-pointer"
+
+                                                  disabled={isSubmitting}
+
+                                    className={`font-bold py-2 px-8 ${isSubmitting?"bg-grey-400  hover:bg-grey-400":"bg-green-800 hover:bg-green-700" }  transition-colors duration-300 rounded-lg cursor-pointer`}
                                 >
-                                    Generate
+                                                  {isSubmitting ? "Generating..." : "Generate"}
+
+                                    
                                 </button>
 
                             </div>

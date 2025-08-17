@@ -47,8 +47,8 @@ export default function FilterTable({ item }) {
   })}
 </div>
 
-<div className='flex'> <ReportComp data={filterData} filterMenu={filterMenu}/>
- <PrintComp data={filterData} filterMenu={filterMenu}/></div>
+<div className='flex'> <ReportComp data={item.cleaningList} filterMenu={filterMenu}/>
+ <PrintComp data={item.cleaningList} filterMenu={filterMenu}/></div>
       </div>
       <div className="flex-1  px-4">
         <div className="bg-[#1e1e1e]  shadow-md border border-[#1f1f1f] p-4">

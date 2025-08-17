@@ -24,11 +24,7 @@ export default function List() {
    const router = useRouter()
 
   useEffect(() => {
-
-
-
-    if (!taskList.length) {
-
+  
       const fetchTaskList = async () => {
         try {
           setLoading(true)
@@ -47,7 +43,7 @@ export default function List() {
         }
       };
       fetchTaskList();
-    }
+    
 
 
   }, [])
@@ -55,6 +51,8 @@ export default function List() {
  const getEachTask = (item) => {
     router.push(`/task-schedule/${item._id}`)
   }
+
+  
 
 
   return (
@@ -97,7 +95,7 @@ export default function List() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1 }}
             >
-            <History className='text-gray-100 mt-2' size={40} />
+            <History className='text-gray-100 mt-3' size={32} />
             <h1 className='text-md font-medium text-gray-100 pt-2'>Use Existing</h1>
           </motion.div>
 
