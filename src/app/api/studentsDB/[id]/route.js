@@ -1,6 +1,7 @@
+// app/api/students/[id]/route.js
 import mongoose from 'mongoose';
 import { connectionStr2 } from '@/app/lib/db';
-import AreasSchema from '@/app/lib/areaModel';
+import StudentsSchema from '@/app/lib/studentsModel';
 import { NextResponse } from 'next/server';
 
 export async function DELETE(request, { params }) {
@@ -9,15 +10,25 @@ export async function DELETE(request, { params }) {
   try {
     await mongoose.connect(connectionStr2);
 
-    const result = await AreasSchema.findByIdAndDelete(id);
+    const result = await StudentsSchema.findByIdAndDelete(id);
 
     if (!result) {
-      return new Response(JSON.stringify({ message: 'Not found' }), { status: 404 });
+      return NextResponse.json(
+        { success: false, message: 'Student not found' }, 
+        { status: 404 }
+      );
     }
 
-    return new Response(JSON.stringify({ message: 'Deleted successfully' }), { status: 200 });
+    return NextResponse.json(
+      { success: true, message: 'Student deleted successfully' }, 
+      { status: 200 }
+    );
   } catch (error) {
-    return new Response(JSON.stringify({ message: 'Error deleting', error }), { status: 500 });
+    console.error('Error deleting student:', error);
+    return NextResponse.json(
+      { success: false, message: 'Error deleting student', error: error.message }, 
+      { status: 500 }
+    );
   }
 }
 
@@ -28,23 +39,23 @@ export async function PUT(request, { params }) {
     await mongoose.connect(connectionStr2);
 
     const body = await request.json();
-    const { place, noPerson, category } = body;
+    const { name, room, className } = body;
 
     // Validate required fields
-    if (!place || !noPerson || !category) {
+    if (!name || !className) {
       return NextResponse.json(
-        { success: false, error: 'All fields (place, noPerson, category) are required' }, 
+        { success: false, error: 'All fields (name, room, className) are required' }, 
         { status: 400 }
       );
     }
 
-    // Find and update the area
-    const updatedArea = await AreasSchema.findByIdAndUpdate(
+    // Find and update the student
+    const updatedStudent = await StudentsSchema.findByIdAndUpdate(
       id,
       { 
-        place: place.trim(),
-        noPerson: parseInt(noPerson),
-        category: category.trim()
+        name: name.trim(),
+        room: room,
+        className: className.trim()
       },
       { 
         new: true, // Return the updated document
@@ -52,9 +63,9 @@ export async function PUT(request, { params }) {
       }
     );
 
-    if (!updatedArea) {
+    if (!updatedStudent) {
       return NextResponse.json(
-        { success: false, error: 'Area not found' }, 
+        { success: false, error: 'Student not found' }, 
         { status: 404 }
       );
     }
@@ -62,14 +73,14 @@ export async function PUT(request, { params }) {
     return NextResponse.json(
       { 
         success: true, 
-        message: 'Area updated successfully',
-        result: updatedArea 
+        message: 'Student updated successfully',
+        result: updatedStudent 
       }, 
       { status: 200 }
     );
 
   } catch (error) {
-    console.error('Error updating area:', error);
+    console.error('Error updating student:', error);
     
     // Handle validation errors
     if (error.name === 'ValidationError') {
@@ -82,7 +93,7 @@ export async function PUT(request, { params }) {
     // Handle cast errors (invalid ObjectId)
     if (error.name === 'CastError') {
       return NextResponse.json(
-        { success: false, error: 'Invalid area ID' }, 
+        { success: false, error: 'Invalid student ID' }, 
         { status: 400 }
       );
     }

@@ -345,7 +345,7 @@ useEffect(() => {
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ duration: 1 }}
-                    >
+                    > 
                         <h1 className="flex justify-center gap-1 text-center text-lg font-bold  py-6 w-full"><ClipboardList /> New Task</h1>
                         <div className="bg-[#2e2e2e] mb-2 py-2 text-center rounded-lg ">
                             <p>Select Class Preference</p>
