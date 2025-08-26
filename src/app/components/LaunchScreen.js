@@ -12,10 +12,11 @@ export default function LaunchScreen({ children }) {
     return (
       <div className="w-full h-screen flex items-center justify-center overflow-hidden bg-white">
         <div
-          className="text-black bg-blue-500 shadow-2xl rounded-4xl cursor-pointer"
+          className="text-black flex items-center flex-col cursor-pointer"
           onClick={() => setIsLaunch(false)}
         >
-          <Image src={lanuch} width={500} height={500} alt="Launch Logo" />
+          <Image src={lanuch} width={350} height={350} alt="Launch Logo" />
+          <p className="text-gray-400 mt-4">-version 0.2</p>
         </div>
       </div>
     );
