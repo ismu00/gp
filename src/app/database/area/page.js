@@ -250,7 +250,7 @@ const handleDeletes = (id) => {
 
   return (
     <div>
-      <div className={`${addArea || editMode ? 'blur-sm' : ''} mx-4`}>
+      <div className={`${editMode ? 'blur-sm' : ''} mx-4`}>
         <div className='mx-8 my-8 flex justify-end'>
           <div onClick={handleToggleAddStudent}>
             <button className={`bg-[#1f1f1f] hover:bg-[#2d2d2d] text-sm py-3 font-semibold rounded-md cursor-pointer px-6`}>
