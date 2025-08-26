@@ -16,7 +16,7 @@ export default function LaunchScreen({ children }) {
           onClick={() => setIsLaunch(false)}
         >
           <Image src={lanuch} width={350} height={350} alt="Launch Logo" />
-          <p className="text-gray-400 mt-4">-version 0.2</p>
+          <p className="text-gray-400 mt-4">-version 2.0</p>
         </div>
       </div>
     );
