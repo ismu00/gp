@@ -1,7 +1,9 @@
+// app/layout.js (Server Component, allowed to have metadata)
 import "./globals.css";
 import Header from "@/app/components/Header";
 import Sidebar from "@/app/components/Sidebar";
-import { DataProvider }from "./context/DataContext";
+import { DataProvider } from "./context/DataContext";
+import LaunchScreen from "@/app/components/LaunchScreen";
 
 export const metadata = {
   title: "CleanStack",
@@ -13,15 +15,17 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body className="antialiased">
         <DataProvider>
-          <div className="flex h-screen overflow-hidden">
-            <Sidebar />
-            <div className="flex flex-col flex-1 overflow-auto">
-              <div className="max-w-7xl mx-auto w-full">
-                <Header />
-                <main>{children}</main>
+          <LaunchScreen>
+            <div className="flex h-screen overflow-hidden">
+              <Sidebar />
+              <div className="flex flex-col flex-1 overflow-auto">
+                <div className="max-w-7xl mx-auto w-full">
+                  <Header />
+                  <main>{children}</main>
+                </div>
               </div>
             </div>
-          </div>
+          </LaunchScreen>
         </DataProvider>
       </body>
     </html>

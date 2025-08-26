@@ -1,11 +1,13 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useData } from './context/DataContext';
 import Overview from './overview/page';
+import Launch from './components/LaunchScreen';
 
 export default function Home() {
   const { studentsNames, setStudentsNames, areaData, setAreaData, taskList, setTaskList } = useData();
+  const [isLaunch, setIsLaunch]= useState(true)
 
   useEffect(() => {
             if (!studentsNames || studentsNames.length === 0) {
@@ -74,8 +76,10 @@ export default function Home() {
   }, [taskList]);
 
   return (
+    
     <div>
-      <Overview />
+ <Overview />
+      
     </div>
   );
 }
