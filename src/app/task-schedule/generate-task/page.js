@@ -15,6 +15,7 @@ export default function GenerateTask() {
     const { taskList, setTaskList } = useData()
     const [cleaningList, setCleaningList] = useState([])
     const [leftover, setLeftOver] = useState()
+    const [leaders, setLeaders] = useState()
     const [isSubmitting, setIsSubmitting] = useState(false)
     
     // Add shuffle order state
@@ -123,6 +124,7 @@ const navigation = useRouter()
 useEffect(() => {
   if (taskList && taskList.length >= 0) {
     setTaskName(`Task ${taskList.length + 1}`);
+      setLeaders(studentsNames.filter(a => a.leader))
   }
 }, [taskList]);
 
@@ -157,21 +159,23 @@ useEffect(() => {
     function generates() {
         setIsSubmitting(true)
         const assignedSet = new Set();
-
-        const classMap = [...new Set(studentsNames.map(s => s.className))]
+       const unPermanent = studentsNames.filter(a => !a.per && !a.leader);
+      
+console.log("leaders", leaders)
+        const classMap = [...new Set(unPermanent.map(s => s.className))]
             .sort((a, b) => {
                 const aNum = parseInt(a.match(/\d+/));
                 const bNum = parseInt(b.match(/\d+/));
                 return aNum - bNum;
             })
             .reduce((acc, className, index) => {
-                acc[index + 1] = shuffle(studentsNames.filter(s => s.className === className));
+                acc[index + 1] = shuffle(unPermanent.filter(s => s.className === className));
                 return acc;
             }, {});
 
-        const roomMap = [...new Set(studentsNames.map(s => s.room))]
+        const roomMap = [...new Set(unPermanent.map(s => s.room))]
             .reduce((acc, room) => {
-                acc[room] = shuffle(studentsNames.filter(s => s.room === room));
+                acc[room] = shuffle(unPermanent.filter(s => s.room === room));
                 return acc;
             }, {});
 
@@ -254,7 +258,7 @@ useEffect(() => {
             } else {
                 if (remaining.length === 0) {
                     // Shuffle students based on shuffleOrder before flattening
-                    const shuffledStudents = shuffleStudentsByOrder(studentsNames, shuffleOrder);
+                    const shuffledStudents = shuffleStudentsByOrder(unPermanent, shuffleOrder);
                     remaining = shuffledStudents;
                 }
                 const pool = remaining.filter(s => !assignedSet.has(s.name));
@@ -268,7 +272,7 @@ useEffect(() => {
             };
         });
 
-        const unassigned = studentsNames.filter(s => !assignedSet.has(s.name));
+        const unassigned = unPermanent.filter(s => !assignedSet.has(s.name));
         setCleaningList(cleaningAssignments);
         setLeftOver(unassigned.map((s) => s.name));
 
@@ -297,6 +301,7 @@ useEffect(() => {
             description,
             cleaningList,
             leftover,
+            leaders
         };
 
         try {

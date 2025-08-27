@@ -85,7 +85,7 @@ export default function FilterTable({ item }) {
               {filterData.map((task, index) => (
                 <tr key={`main-${index}`} className="hover:bg-[#2b2b2b]">
                   <td className="px-4 py-2">{index + 1}</td>
-                  <td className="px-4 py-2">{task.place}</td>
+                  <td className="px-4 py-2">{task.place === "Room 33" ? "Clock Room" : task.place === "Room 32" ? "Sick Room" : task.place}</td>
                   <td className="px-4 py-2">{task.cleaner.join(', ')}</td>
                 </tr>
               ))}

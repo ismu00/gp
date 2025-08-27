@@ -15,6 +15,7 @@ const taskListModel = new mongoose.Schema({
     },
   ],
   leftover: [String],
+  leaders: [Array]
 });
 
 // ✅ Use "default" export and correct model check

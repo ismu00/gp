@@ -69,7 +69,7 @@ function ReportComp({ data, filterMenu }) {
                                 {cleaningData.filter(area => area.category === cat).map((task, index) => (
                                     <tr className='p-8' key={index}>
                                         <td className="px-2 py-1 text-left text-gray-950 ">{index + 1}.</td>
-                                        <td className="py-1 w-50  font-semibold text-gray-950 ">{task.place}</td>
+                                        <td className="py-1 w-50  font-semibold text-gray-950 ">{task.place === "Room 33" ? "Clock Room" : task.place === "Room 32" ? "Sick Room" : task.place}</td>
                                         <td className=" py-1 text-gray-950 ">:</td>
                                         <td className="px-4 py-1 text-gray-950 ">
                                             {task.cleaner.map((i, idx) => (
