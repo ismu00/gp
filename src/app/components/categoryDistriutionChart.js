@@ -23,7 +23,7 @@ function CategoryDistributionChart() {
     { name: 'Class 5', students: 56 },
   ])
 
-  const colors = ['#00d2ff', '#ff7f50', '#32cd32', '#ffa500', '#9370db'] // 5 colors
+  const colors = ['#00d2ff', '#00d2ff', '#00d2ff', '#00d2ff', '#00d2ff'] // 5 colors
 
   return (
     <motion.div
