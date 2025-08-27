@@ -15,15 +15,8 @@ function PrintComp({ data, filterMenu }) {
     const category = ["Masjid", "MNC Ground Floor", "MNC First Floor", "MNC Second Floor", "MNC Outside"]
 
 
-    const sampleData = {
-        cleaningList: [
-            { place: "Kitchen", cleaner: ["John", "Mary"] },
-            { place: "Bathroom", cleaner: ["Alice"] },
-            { place: "Living Room", cleaner: ["Bob", "Charlie"] },
-            { place: "Bedroom 1", cleaner: ["David"] },
-            { place: "Bedroom 2", cleaner: ["Eve", "Frank"] },
-        ]
-    }
+    const leaders = ["Midlaj Muhyudheen (4)", "Salim Abdul Rahman (4)", "Muhammed Jouhar (5)","Muhammed Bilal (5)","Muhammed Shahid (5)"        ]
+
 
     const cleaningData = data || sampleData
 
@@ -50,7 +43,7 @@ function PrintComp({ data, filterMenu }) {
                             <p className="px-8 font-black text-3xl rounded-full py-2 bg-black text-gray-50 flex items-center justify-center">
                                 {cat}
                             </p>
-                            <p className='text-black mt-2'>Superviser: Ahmed Yaseen</p>
+                            <p className='text-black mt-2'>Supervisor: {leaders[index]}</p>
                         </div>
 
                         <div className="min-w-full border-gray-700">
