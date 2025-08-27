@@ -4,7 +4,7 @@ import { notFound } from 'next/navigation'
 
 
 async function getTaskById(id) {
-  const res = await fetch(`https://gp-silk.vercel.app/api/taskList/${id}`, { cache: 'no-store' })
+  const res = await fetch(`https://cleanstackz.vercel.app/api/taskList/${id}`, { cache: 'no-store' })
   if (!res.ok) return null
   const json = await res.json()
   return json.result

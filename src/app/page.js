@@ -6,7 +6,7 @@ import Overview from './overview/page';
 import Launch from './components/LaunchScreen';
 
 export default function Home() {
-  const { studentsNames, setStudentsNames, areaData, setAreaData, taskList, setTaskList } = useData();
+  const { studentsNames, setStudentsNames, areaData, setAreaData, taskList, setTaskList,setAreaPerData } = useData();
   const [isLaunch, setIsLaunch]= useState(true)
 
   useEffect(() => {
@@ -40,6 +40,22 @@ export default function Home() {
       }
     };
 
+        const fetchPerAreas = async () => {
+            try {
+                const res = await fetch('/api/permanent')
+                const json = await res.json()
+                if (json.success) {
+                    setAreaPerData(json.result)
+                } else {
+                    console.error(json.error)
+                }
+            } catch (error) {
+                console.error('Areas fetch failed:', error)
+            }
+        }
+    
+       
+    
 
    const fetchTaskList = async () => {
       try {
@@ -59,6 +75,7 @@ export default function Home() {
 
     fetchStudents();
     fetchAreas();
+    fetchPerAreas()
     fetchTaskList();
   }
   }, []);
