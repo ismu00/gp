@@ -6,14 +6,21 @@ import Image from "next/image";
 import lanuch from "../../../public/lanuch.png";
 
 export default function LaunchScreen({ children }) {
+
+
   const [isLaunch, setIsLaunch] = useState(true);
+
+ setTimeout(() => {
+  setIsLaunch(false)
+ }, 1000);
+  
 
   if (isLaunch) {
     return (
       <div className="w-full h-screen flex items-center justify-center overflow-hidden bg-white">
         <div
           className="text-black flex items-center flex-col cursor-pointer"
-          onClick={() => setIsLaunch(false)}
+          // onClick={() => setIsLaunch(false)}
         >
           <Image src={lanuch} width={350} height={350} alt="Launch Logo" />
           <p className="text-gray-400 mt-4">-version 2.0</p>
