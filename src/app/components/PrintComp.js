@@ -15,7 +15,7 @@ function PrintComp({ data, filterMenu }) {
     const category = ["Masjid", "MNC Ground Floor", "MNC First Floor", "MNC Second Floor", "MNC Outside"]
 
 
-    const leaders = ["Midlaj Muhyudheen (4)", "Salim Abdul Rahman (4)", "Muhammed Jouhar (5)","Muhammed Bilal (5)","Muhammed Shahid (5)"        ]
+    const leaders = ["Niyas Noushad (4)", "Asim Abdul Wahab (4)", "Midlaj Muhyudheen (4)","Fahiz Khalid (4)","Salim Abdul Rahman (4)"        ]
 
 
     const cleaningData = data || sampleData
